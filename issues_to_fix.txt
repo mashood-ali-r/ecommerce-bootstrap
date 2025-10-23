@@ -1,0 +1,3 @@
+The issue to fix: Fix the update quantity slider, the quantity is adding, the HTML/CSS isn't.
+Better CSS, styling.
+Make a cart icon so the cart can be accessed, not from the "add" but from the cart button itself, only.
