@@ -34,7 +34,7 @@ class CartController extends Controller
 
         session(['cart' => $cart]);
 
-        return redirect()->route('cart.view')->with('success', 'Product added to cart!');
+        return back()->with('success', 'Product added to cart!');
     }
 
     // Remove product from cart

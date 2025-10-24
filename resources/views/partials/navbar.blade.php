@@ -17,6 +17,17 @@
         <li class="nav-item">
           <a class="nav-link {{ Request::is('contact') ? 'active' : '' }}" href="{{ url('/contact') }}">Contact</a>
         </li>
+        <!-- Check Cart Button -->
+        <li class="nav-item">
+          <a class="btn btn-outline-light ms-3" href="{{ route('cart.view') }}">
+            <i class="bi bi-cart3"></i> Check Cart
+            @if(session('cart'))
+              <span class="badge bg-danger">
+                {{ array_sum(array_column(session('cart', []), 'quantity')) }}
+              </span>
+            @endif
+          </a>
+        </li>
       </ul>
     </div>
   </div>
