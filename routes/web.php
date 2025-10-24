@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\CartController;
 
 /*
@@ -18,6 +19,11 @@ Route::get('/', function () {
 Route::get('/products', function () {
     return view('products.index');
 })->name('products.index');
+
+// Product show page
+Route::get('/products/{id}', function ($id) {
+    return view('products.show', compact('id'));
+})->name('products.show');
 
 // Product search
 Route::get('/products/search', function () {
@@ -43,6 +49,41 @@ Route::get('/account', function () {
 Route::get('/wishlist', function () {
     return view('wishlist');
 })->name('wishlist');
+
+// Add to wishlist
+Route::post('/wishlist/add', function (Request $request) {
+    $wishlist = session('wishlist', []);
+    $productId = $request->input('id');
+    $productName = $request->input('name');
+    $productPrice = $request->input('price');
+    
+    if (!isset($wishlist[$productId])) {
+        $wishlist[$productId] = [
+            'id' => $productId,
+            'name' => $productName,
+            'price' => $productPrice,
+            'added_at' => now()
+        ];
+        session(['wishlist' => $wishlist]);
+        return response()->json(['success' => true, 'message' => 'Added to wishlist!']);
+    }
+    
+    return response()->json(['success' => false, 'message' => 'Already in wishlist!']);
+})->name('wishlist.add');
+
+// Remove from wishlist
+Route::post('/wishlist/remove', function (Request $request) {
+    $wishlist = session('wishlist', []);
+    $productId = $request->input('id');
+    
+    if (isset($wishlist[$productId])) {
+        unset($wishlist[$productId]);
+        session(['wishlist' => $wishlist]);
+        return response()->json(['success' => true, 'message' => 'Removed from wishlist!']);
+    }
+    
+    return response()->json(['success' => false, 'message' => 'Item not found in wishlist!']);
+})->name('wishlist.remove');
 
 // Categories page
 Route::get('/categories', function () {

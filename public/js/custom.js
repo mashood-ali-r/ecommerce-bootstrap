@@ -182,3 +182,159 @@ function lazyLoadImages() {
 
 // Initialize lazy loading when DOM is ready
 document.addEventListener('DOMContentLoaded', lazyLoadImages);
+
+// Enhanced interactive features
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Add loading states to buttons
+    function addLoadingState(button) {
+        const originalText = button.innerHTML;
+        button.innerHTML = '<span class="loading-spinner"></span> Adding...';
+        button.disabled = true;
+        
+        // Remove loading state after 2 seconds (simulate API call)
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }, 2000);
+    }
+    
+    // Add loading state to all add to cart buttons
+    document.querySelectorAll('form[action*="cart.add"] button[type="submit"]').forEach(button => {
+        button.addEventListener('click', function(e) {
+            addLoadingState(this);
+        });
+    });
+    
+    // Add ripple effect to buttons
+    document.querySelectorAll('.btn-ripple').forEach(button => {
+        button.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                pointer-events: none;
+            `;
+            
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+    
+    // Add cart count animation
+    const cartBadge = document.querySelector('.cart-btn .badge');
+    if (cartBadge) {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                    cartBadge.style.transform = 'scale(1.2)';
+                    cartBadge.style.transition = 'transform 0.3s ease';
+                    setTimeout(() => {
+                        cartBadge.style.transform = 'scale(1)';
+                    }, 300);
+                }
+            });
+        });
+        observer.observe(cartBadge, { childList: true, characterData: true, subtree: true });
+    }
+    
+    // Add search suggestions (mock data)
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                // Simulate search suggestions
+                console.log('Searching for:', this.value);
+            }, 300);
+        });
+    }
+    
+    // Add hover effects to product cards
+    document.querySelectorAll('.product-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Add click effects to navigation links
+    document.querySelectorAll('.nav-link-hover').forEach(link => {
+        link.addEventListener('click', function() {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        });
+    });
+    
+    // Add smooth reveal animation for elements
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe elements for reveal animation
+    document.querySelectorAll('.product-card, .section-title, .trending-badges').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        revealObserver.observe(el);
+    });
+});
+
+// Add CSS for ripple animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+    
+    .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(style);
