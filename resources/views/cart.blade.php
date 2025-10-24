@@ -28,10 +28,11 @@
                         <!-- Quantity / Update form -->
                         <td>
                             <form action="{{ route('cart.update') }}" method="POST" class="d-flex">
-                                @csrf
-                                <input type="hidden" name="id" value="{{ $id }}">
-                                <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1" class="form-control form-control-sm me-2">
-                                <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                              @csrf
+                              <input type="hidden" name="id" value="{{ $id }}">
+                              <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1"
+                              class="form-control form-control-sm me-2"
+                              onchange="this.form.submit()">
                             </form>
                         </td>
 
