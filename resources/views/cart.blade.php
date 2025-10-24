@@ -60,7 +60,7 @@
             <a href="{{ route('checkout') }}" class="btn btn-success">Proceed to Checkout</a>
         </div>
     @else
-        <p class="mt-4">Your cart is empty 😢</p>
+        <p class="mt-4">Your cart is empty!</p>
     @endif
 </div>
 @endsection
