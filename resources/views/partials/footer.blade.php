@@ -3,7 +3,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-3 col-md-6 mb-4">
-                <h5 class="fw-bold mb-3">EEZEPC.com</h5>
+                <h5 class="fw-bold mb-3">{{ config('app.name', 'Laravel') }}</h5>
                 <p class="small">Mobile Phones, TVs, Home Appliances, Computers, Laptops, Gaming Consoles & more in Pakistan</p>
                 <div class="contact-info">
                     <p class="small mb-1"><strong>Got Questions? Contact Us</strong></p>
@@ -19,7 +19,7 @@
                     <a href="#" class="text-white social-icon"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
-            
+
             <div class="col-lg-3 col-md-6 mb-4">
                 <h6 class="fw-bold mb-3">Categories</h6>
                 <ul class="list-unstyled">
@@ -32,7 +32,7 @@
                     <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none footer-link">Wearable & Gadgets</a></li>
                 </ul>
             </div>
-            
+
             <div class="col-lg-3 col-md-6 mb-4">
                 <h6 class="fw-bold mb-3">Customer Support</h6>
                 <ul class="list-unstyled">
@@ -44,7 +44,7 @@
                     <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none footer-link">Tap and Pay</a></li>
                 </ul>
             </div>
-            
+
             <div class="col-lg-3 col-md-6 mb-4">
                 <h6 class="fw-bold mb-3">Policy</h6>
                 <ul class="list-unstyled">
@@ -56,12 +56,12 @@
                 </ul>
             </div>
         </div>
-        
+
         <hr class="bg-secondary">
-        
+
         <div class="row">
             <div class="col-md-6 text-center text-md-start">
-                <p class="small mb-0">&copy; {{ date('Y') }} EEZEPC. All Rights Reserved.</p>
+                <p class="small mb-0">&copy; {{ date('Y') }} {{ config('app.name', 'Laravel') }}. All Rights Reserved.</p>
             </div>
             <div class="col-md-6 text-center text-md-end">
                 <p class="small mb-0">Payments</p>

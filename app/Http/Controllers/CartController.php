@@ -2,69 +2,66 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
 {
-    // Show cart page
     public function view()
     {
-        $cart = session()->get('cart', []); // session key 'cart'
+        $cart = $this->getCart();
         return view('cart', compact('cart'));
     }
 
-    // Add product to cart
     public function add(Request $request)
     {
-        $productId = $request->input('id');
-        $productName = $request->input('name');
-        $productPrice = $request->input('price');
+        $product = Product::findOrFail($request->input('id'));
+        $cart = $this->getCart(true);
 
-        $cart = session()->get('cart', []);
+        $cartItem = $cart->items()->where('product_id', $product->id)->first();
 
-        if(isset($cart[$productId])) {
-            $cart[$productId]['quantity']++;
+        if ($cartItem) {
+            $cartItem->increment('quantity');
         } else {
-            $cart[$productId] = [
-                "name" => $productName,
-                "quantity" => 1,
-                "price" => $productPrice
-            ];
+            $cart->items()->create([
+                'product_id' => $product->id,
+                'quantity' => 1,
+            ]);
         }
-
-        session(['cart' => $cart]);
 
         return back()->with('success', 'Product added to cart!');
     }
 
-    // Remove product from cart
     public function remove(Request $request)
     {
-        $id = $request->input('id'); // must match hidden input 'id' in Blade
-        $cart = session()->get('cart', []);
+        $cart = $this->getCart();
+        $cart->items()->where('id', $request->input('id'))->delete();
 
-        if(isset($cart[$id])) {
-            unset($cart[$id]);
-            session(['cart' => $cart]);
-            return redirect()->route('cart.view')->with('success', 'Product removed successfully!');
-        }
-
-        return redirect()->route('cart.view')->with('error', 'Product not found in cart.');
+        return redirect()->route('cart.view')->with('success', 'Product removed successfully!');
     }
 
-    // Update quantity in cart
     public function update(Request $request)
     {
-        $id = $request->input('id'); // must match hidden input 'id' in Blade
-        $quantity = max(1, (int)$request->input('quantity', 1)); // minimum quantity = 1
-        $cart = session()->get('cart', []);
+        $cart = $this->getCart();
+        $cart->items()->where('id', $request->input('id'))->update([
+            'quantity' => max(1, (int)$request->input('quantity', 1)),
+        ]);
 
-        if(isset($cart[$id])) {
-            $cart[$id]['quantity'] = $quantity; // update the quantity
-            session(['cart' => $cart]);
-            return redirect()->route('cart.view')->with('success', 'Quantity updated!');
+        return redirect()->route('cart.view')->with('success', 'Quantity updated!');
+    }
+
+    private function getCart($create = false)
+    {
+        if (Auth::check()) {
+            $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
+        } else {
+            $sessionId = Session::getId();
+            $cart = Cart::firstOrCreate(['session_id' => $sessionId]);
         }
 
-        return redirect()->route('cart.view')->with('error', 'Product not found in cart.');
+        return $cart;
     }
 }
