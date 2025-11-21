@@ -2,9 +2,9 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
     <div class="container">
         <a class="navbar-brand fw-bold text-primary fs-3 brand-logo" href="{{ route('home') }}">
-            EEZEPC<span class="text-danger">.com</span>
+            {{ config('app.name', 'Laravel') }}
         </a>
-        
+
         <!-- Search Bar -->
         <form class="d-none d-lg-flex flex-grow-1 mx-5" action="{{ route('products.search') }}" method="GET">
             <div class="input-group search-group">

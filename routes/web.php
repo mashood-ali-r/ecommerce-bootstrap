@@ -1,8 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProductController as ShopProductController;
+use App\Http\Controllers\WishlistController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -11,24 +15,16 @@ use App\Http\Controllers\CartController;
 */
 
 // Home page
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Products page
-Route::get('/products', function () {
-    return view('products.index');
-})->name('products.index');
+Route::get('/products', [ShopProductController::class, 'index'])->name('products.index');
 
 // Product show page
-Route::get('/products/{id}', function ($id) {
-    return view('products.show', compact('id'));
-})->name('products.show');
+Route::get('/products/{product}', [ShopProductController::class, 'show'])->name('products.show');
 
 // Product search
-Route::get('/products/search', function () {
-    return view('products.index');
-})->name('products.search');
+Route::get('/products/search', [ShopProductController::class, 'search'])->name('products.search');
 
 // Checkout page
 Route::get('/checkout', function () {
@@ -46,44 +42,13 @@ Route::get('/account', function () {
 })->name('account');
 
 // Wishlist page
-Route::get('/wishlist', function () {
-    return view('wishlist');
-})->name('wishlist');
+Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
 
 // Add to wishlist
-Route::post('/wishlist/add', function (Request $request) {
-    $wishlist = session('wishlist', []);
-    $productId = $request->input('id');
-    $productName = $request->input('name');
-    $productPrice = $request->input('price');
-    
-    if (!isset($wishlist[$productId])) {
-        $wishlist[$productId] = [
-            'id' => $productId,
-            'name' => $productName,
-            'price' => $productPrice,
-            'added_at' => now()
-        ];
-        session(['wishlist' => $wishlist]);
-        return response()->json(['success' => true, 'message' => 'Added to wishlist!']);
-    }
-    
-    return response()->json(['success' => false, 'message' => 'Already in wishlist!']);
-})->name('wishlist.add');
+Route::post('/wishlist/add', [WishlistController::class, 'add'])->name('wishlist.add');
 
 // Remove from wishlist
-Route::post('/wishlist/remove', function (Request $request) {
-    $wishlist = session('wishlist', []);
-    $productId = $request->input('id');
-    
-    if (isset($wishlist[$productId])) {
-        unset($wishlist[$productId]);
-        session(['wishlist' => $wishlist]);
-        return response()->json(['success' => true, 'message' => 'Removed from wishlist!']);
-    }
-    
-    return response()->json(['success' => false, 'message' => 'Item not found in wishlist!']);
-})->name('wishlist.remove');
+Route::post('/wishlist/remove', [WishlistController::class, 'remove'])->name('wishlist.remove');
 
 // Categories page
 Route::get('/categories', function () {
@@ -106,5 +71,12 @@ Route::prefix('cart')->group(function () {
     Route::get('/', [CartController::class, 'view'])->name('cart.view');
     Route::post('/add', [CartController::class, 'add'])->name('cart.add');
     Route::post('/remove', [CartController::class, 'remove'])->name('cart.remove');
-    Route::post('/update', [CartController::class, 'update'])->name('cart.update'); // <-- no extra cart/
+    Route::post('/update', [CartController::class, 'update'])->name('cart.update');
+});
+
+// Admin Routes
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('products', ProductController::class);
+    Route::resource('categories', CategoryController::class);
+    Route::delete('products/images/{image}', [ProductController::class, 'destroyImage'])->name('products.images.destroy');
 });

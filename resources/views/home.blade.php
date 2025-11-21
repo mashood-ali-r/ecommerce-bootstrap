@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container-fluid px-0">
-    
+
     <!-- Trending Section -->
     <div class="bg-light py-3">
         <div class="container">
@@ -30,108 +30,35 @@
             <h3 class="fw-bold">Fresh Picks!</h3>
             <a href="#" class="btn btn-outline-primary">View All</a>
         </div>
-        
+
         <div class="row">
-            <!-- Product 1 -->
-            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="card product-card h-100 shadow-sm">
-                    <div class="position-relative">
-                        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Samsung Galaxy Buds 3 FE">
-                        <span class="badge new-badge position-absolute top-0 start-0 m-2">New</span>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title">Samsung Galaxy Buds 3 FE – Black</h6>
-                        <p class="card-text price-current mb-3">Rs 33,990</p>
-                        <div class="d-grid gap-2 mt-auto">
-                            <a href="{{ route('products.show', 'samsung-buds-3-fe') }}" class="btn btn-outline-primary btn-sm">View Product</a>
-                            <div class="d-flex gap-2">
-                                <form action="{{ route('cart.add') }}" method="POST" class="flex-grow-1">
-                                    @csrf
-                                    <input type="hidden" name="id" value="samsung-buds-3-fe">
-                                    <input type="hidden" name="name" value="Samsung Galaxy Buds 3 FE – Black">
-                                    <input type="hidden" name="price" value="33990">
-                                    <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
-                                </form>
-                                <button class="btn btn-outline-danger" onclick="addToWishlist('samsung-buds-3-fe', 'Samsung Galaxy Buds 3 FE – Black', '33990')">
-                                    <i class="fas fa-heart"></i>
-                                </button>
+            @foreach ($featuredProducts as $product)
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="card product-card h-100 shadow-sm">
+                        <div class="position-relative">
+                            <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="{{ $product->name }}">
+                            <span class="badge new-badge position-absolute top-0 start-0 m-2">New</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title">{{ $product->name }}</h6>
+                            <p class="card-text price-current mb-3">Rs {{ $product->price }}</p>
+                            <div class="d-grid gap-2 mt-auto">
+                                <a href="{{ route('products.show', $product) }}" class="btn btn-outline-primary btn-sm">View Product</a>
+                                <div class="d-flex gap-2">
+                                    <form action="{{ route('cart.add') }}" method="POST" class="flex-grow-1">
+                                        @csrf
+                                        <input type="hidden" name="id" value="{{ $product->id }}">
+                                        <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
+                                    </form>
+                                    <button class="btn btn-outline-danger add-to-wishlist" data-product-id="{{ $product->id }}">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Product 2 -->
-            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="card product-card h-100 shadow-sm">
-                    <div class="position-relative">
-                        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Corsair 3500X LX-R Black">
-                        <span class="badge new-badge position-absolute top-0 start-0 m-2">New</span>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title">Corsair 3500X RS-R ARGB Mid-Tower PC Case – Black</h6>
-                        <p class="card-text price-current mb-3">Rs 29,990</p>
-                        <div class="d-grid gap-2 mt-auto">
-                            <a href="{{ route('products.show', 'corsair-3500x-black') }}" class="btn btn-outline-primary btn-sm">View Product</a>
-                            <form action="{{ route('cart.add') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="id" value="corsair-3500x-black">
-                                <input type="hidden" name="name" value="Corsair 3500X RS-R ARGB Mid-Tower PC Case – Black">
-                                <input type="hidden" name="price" value="29990">
-                                <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 3 -->
-            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="card product-card h-100 shadow-sm">
-                    <div class="position-relative">
-                        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Corsair 3500X RS-R White">
-                        <span class="badge new-badge position-absolute top-0 start-0 m-2">New</span>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title">Corsair 3500X RS-R ARGB Mid-Tower PC Case – White</h6>
-                        <p class="card-text price-current mb-3">Rs 29,990</p>
-                        <div class="d-grid gap-2 mt-auto">
-                            <a href="{{ route('products.show', 'corsair-3500x-white') }}" class="btn btn-outline-primary btn-sm">View Product</a>
-                            <form action="{{ route('cart.add') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="id" value="corsair-3500x-white">
-                                <input type="hidden" name="name" value="Corsair 3500X RS-R ARGB Mid-Tower PC Case – White">
-                                <input type="hidden" name="price" value="29990">
-                                <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 4 -->
-            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="card product-card h-100 shadow-sm">
-                    <div class="position-relative">
-                        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Tecno Spark Go 2">
-                        <span class="badge new-badge position-absolute top-0 start-0 m-2">New</span>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title">Tecno Spark Go 2 (4GB, 64GB, Ink Black)</h6>
-                        <p class="card-text price-current mb-3">Rs 22,990</p>
-                        <div class="d-grid gap-2 mt-auto">
-                            <a href="{{ route('products.show', 'tecno-spark-go-2') }}" class="btn btn-outline-primary btn-sm">View Product</a>
-                            <form action="{{ route('cart.add') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="id" value="tecno-spark-go-2">
-                                <input type="hidden" name="name" value="Tecno Spark Go 2 (4GB, 64GB, Ink Black)">
-                                <input type="hidden" name="price" value="22990">
-                                <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 
@@ -174,7 +101,7 @@
             <h3 class="fw-bold">Flash Deals</h3>
             <a href="#" class="btn btn-outline-primary">View All</a>
         </div>
-        
+
         <div class="row">
             <!-- Flash Deal Product 1 -->
             <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
@@ -194,8 +121,6 @@
                             <form action="{{ route('cart.add') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="id" value="apple-iphone-air-256gb">
-                                <input type="hidden" name="name" value="Apple iPhone Air 256GB – Sky Blue (PTA Approved)">
-                                <input type="hidden" name="price" value="464990">
                                 <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
                             </form>
                         </div>
@@ -221,8 +146,6 @@
                             <form action="{{ route('cart.add') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="id" value="lg-50-4k-tv">
-                                <input type="hidden" name="name" value="LG 50″ 4K UHD AI TV UA84 HDR10 Smart TV (2025)">
-                                <input type="hidden" name="price" value="163990">
                                 <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
                             </form>
                         </div>
@@ -248,8 +171,6 @@
                             <form action="{{ route('cart.add') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="id" value="google-pixel-10-pro-xl">
-                                <input type="hidden" name="name" value="Google Pixel 10 Pro XL (16GB, 256GB, Obsidian)">
-                                <input type="hidden" name="price" value="312990">
                                 <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
                             </form>
                         </div>
@@ -275,8 +196,6 @@
                             <form action="{{ route('cart.add') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="id" value="samsung-buds-core">
-                                <input type="hidden" name="name" value="Samsung Galaxy Buds Core True Wireless Earbuds – Black">
-                                <input type="hidden" name="price" value="9990">
                                 <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
                             </form>
                         </div>
@@ -320,88 +239,4 @@
     </div>
 
 </div>
-
-@push('scripts')
-<script>
-function addToWishlist(productId, productName, productPrice) {
-    // Get CSRF token
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    
-    // Show loading state
-    const button = event.target;
-    const originalText = button.innerHTML;
-    button.innerHTML = '<span class="loading-spinner"></span>';
-    button.disabled = true;
-    
-    // Make AJAX request
-    fetch('/wishlist/add', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        },
-        body: JSON.stringify({
-            id: productId,
-            name: productName,
-            price: productPrice
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Reset button
-        button.innerHTML = originalText;
-        button.disabled = false;
-        
-        if (data.success) {
-            // Show success message
-            showMessage(data.message, 'success');
-            // Update wishlist count in navbar
-            updateWishlistCount();
-        } else {
-            // Show error message
-            showMessage(data.message, 'warning');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        button.innerHTML = originalText;
-        button.disabled = false;
-        showMessage('Error adding to wishlist', 'danger');
-    });
-}
-
-function showMessage(message, type) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    
-    document.body.appendChild(alertDiv);
-    
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-        if (alertDiv.parentNode) {
-            alertDiv.remove();
-        }
-    }, 3000);
-}
-
-function updateWishlistCount() {
-    // Update wishlist count in navbar
-    const wishlistBadge = document.querySelector('.nav-icon .badge');
-    if (wishlistBadge) {
-        const currentCount = parseInt(wishlistBadge.textContent) || 0;
-        wishlistBadge.textContent = currentCount + 1;
-        wishlistBadge.style.transform = 'scale(1.2)';
-        wishlistBadge.style.transition = 'transform 0.3s ease';
-        setTimeout(() => {
-            wishlistBadge.style.transform = 'scale(1)';
-        }, 300);
-    }
-}
-</script>
-@endpush
 @endsection
