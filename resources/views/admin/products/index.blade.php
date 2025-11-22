@@ -81,8 +81,8 @@
                             </span>
                         </td>
                         <td>
-                            <span class="badge {{ $product->is_active ? 'bg-success' : 'bg-secondary' }}">
-                                {{ $product->is_active ? 'Active' : 'Inactive' }}
+                            <span class="badge {{ $product->status == 'active' ? 'bg-success' : 'bg-secondary' }}">
+                                {{ ucfirst($product->status) }}
                             </span>
                         </td>
                         <td>
@@ -90,8 +90,10 @@
                                 <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-outline-primary" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="d-inline" 
-                                      onsubmit="return confirm('Are you sure you want to delete this product?')">
+                                <a href="{{ route('admin.products.images', $product) }}" class="btn btn-outline-info" title="Manage Images">
+                                    <i class="fas fa-images"></i>
+                                </a>
+                                <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this product?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-outline-danger" title="Delete">
@@ -103,7 +105,13 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="text-center text-muted py-4">No products found</td>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No products found.</p>
+                            <a href="{{ route('admin.products.create') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Add Your First Product
+                            </a>
+                        </td>
                     </tr>
                     @endforelse
                 </tbody>

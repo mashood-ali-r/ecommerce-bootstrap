@@ -1,3 +1,4 @@
+@include('partials.loading')
 @include('partials.header')
 @include('partials.topbar')
 @include('partials.navbar')

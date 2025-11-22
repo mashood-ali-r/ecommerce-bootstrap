@@ -30,7 +30,7 @@
         <!-- Product Info -->
         <div class="col-lg-6">
             <div class="product-info">
-                <h1 class="product-title mb-3">{{ $productName ?? 'Sample Product' }}</h1>
+                <h1 class="product-title mb-3">{{ $product->name }}</h1>
                 
                 <!-- Rating -->
                 <div class="rating mb-3">
@@ -47,7 +47,7 @@
                 <!-- Price -->
                 <div class="price-section mb-4">
                     <div class="d-flex align-items-center">
-                        <span class="current-price h3 text-primary me-3">Rs {{ $productPrice ?? '33,990' }}</span>
+                        <span class="current-price h3 text-primary me-3">Rs {{ number_format($product->price) }}</span>
                         @if(isset($originalPrice))
                         <span class="original-price text-muted text-decoration-line-through">Rs {{ $originalPrice }}</span>
                         @endif
@@ -60,7 +60,7 @@
                 <!-- Product Description -->
                 <div class="product-description mb-4">
                     <h5>Description</h5>
-                    <p class="text-muted">{{ $productDescription ?? 'This is a high-quality product with excellent features and performance. Perfect for your needs with modern design and advanced technology.' }}</p>
+                    <p class="text-muted">{{ $product->description }}</p>
                 </div>
 
                 <!-- Features -->
@@ -89,9 +89,9 @@
                             <div class="d-grid gap-2">
                                 <form action="{{ route('cart.add') }}" method="POST">
                                     @csrf
-                                    <input type="hidden" name="id" value="{{ $id }}">
-                                    <input type="hidden" name="name" value="{{ $productName ?? 'Sample Product' }}">
-                                    <input type="hidden" name="price" value="{{ $productPrice ?? '33990' }}">
+                                    <input type="hidden" name="id" value="{{ $product->id }}">
+                                    <input type="hidden" name="name" value="{{ $product->name }}">
+                                    <input type="hidden" name="price" value="{{ $product->price }}">
                                     <button type="submit" class="btn btn-primary btn-lg w-100 btn-ripple">
                                         <i class="fas fa-shopping-cart me-2"></i>Add to Basket
                                     </button>
@@ -109,7 +109,7 @@
                     <div class="row">
                         <div class="col-6">
                             <small class="text-muted">SKU:</small><br>
-                            <strong>{{ $id ?? 'SKU-001' }}</strong>
+                            <strong>{{ $product->sku ?? 'SKU-001' }}</strong>
                         </div>
                         <div class="col-6">
                             <small class="text-muted">Category:</small><br>
@@ -228,7 +228,7 @@ const productData = {
 
 // Update product info based on ID
 document.addEventListener('DOMContentLoaded', function() {
-    const productId = '{{ $id }}';
+    const productId = '{{ $product->slug }}';
     const product = productData[productId];
     
     if (product) {
@@ -266,7 +266,7 @@ function changeQuantity(change) {
 }
 
 function addToWishlist() {
-    const productId = '{{ $id }}';
+    const productId = '{{ $product->id }}';
     const productName = document.querySelector('.product-title').textContent;
     const productPrice = document.querySelector('.current-price').textContent.replace('Rs ', '').replace(',', '');
     

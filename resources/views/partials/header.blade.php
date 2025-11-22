@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/bento-cards.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/hero-billboard.css') }}">
     @stack('styles')
 </head>
 <body>

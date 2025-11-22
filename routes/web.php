@@ -33,6 +33,24 @@ Route::get('/account', function () {
     return view('account');
 })->name('account');
 
+// Login routes
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
+
+Route::post('/login', function () {
+    return redirect()->route('home')->with('success', 'Logged in successfully (Demo)');
+})->name('login.post');
+
+// Register routes
+Route::get('/register', function () {
+    return view('auth.register');
+})->name('register');
+
+Route::post('/register', function () {
+    return redirect()->route('home')->with('success', 'Account created successfully (Demo)');
+})->name('register.post');
+
 // Wishlist routes
 Route::prefix('wishlist')->group(function () {
     Route::get('/', [App\Http\Controllers\WishlistController::class, 'index'])->name('wishlist.index');
@@ -64,6 +82,12 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
     
     // Products CRUD
     Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
+    
+    // Product Images
+    Route::get('/products/{product}/images', [App\Http\Controllers\Admin\ProductImageController::class, 'index'])->name('products.images');
+    Route::post('/products/{product}/images', [App\Http\Controllers\Admin\ProductImageController::class, 'store'])->name('products.images.store');
+    Route::put('/products/{product}/images/{image}/set-primary', [App\Http\Controllers\Admin\ProductImageController::class, 'setPrimary'])->name('products.images.set-primary');
+    Route::delete('/products/{product}/images/{image}', [App\Http\Controllers\Admin\ProductImageController::class, 'destroy'])->name('products.images.destroy');
     
     // Categories CRUD
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);

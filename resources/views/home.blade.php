@@ -1,407 +1,126 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid px-0">
-    
-    <!-- Trending Section -->
-    <div class="bg-light py-3">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h6 class="mb-0 fw-bold">Trending</h6>
-                </div>
-                <div class="col-md-6">
-                    <div class="d-flex flex-wrap">
-                        <span class="badge bg-secondary me-2 mb-1">9070 XT</span>
-                        <span class="badge bg-secondary me-2 mb-1">Nintendo Switch 2 Mario</span>
-                        <span class="badge bg-secondary me-2 mb-1">ZOWIE</span>
-                        <span class="badge bg-secondary me-2 mb-1">Philips Shaver</span>
-                        <span class="badge bg-secondary me-2 mb-1">Samsung A56</span>
-                        <span class="badge bg-secondary me-2 mb-1">PlayStation 5</span>
-                    </div>
+<div class="amz-hero-container">
+    <!-- Hero Slider -->
+    <div id="heroCarousel" class="carousel slide amz-hero-slider" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" class="d-block w-100" alt="Gaming Setup" style="height: 600px; object-fit: cover;">
+            </div>
+            <div class="carousel-item">
+                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" class="d-block w-100" alt="Tech Deals" style="height: 600px; object-fit: cover;">
+            </div>
+            <div class="carousel-item">
+                <img src="https://images.unsplash.com/photo-1593640408182-31c70c8268f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" class="d-block w-100" alt="New Arrivals" style="height: 600px; object-fit: cover;">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+        <!-- Gradient Overlay -->
+        <div class="amz-hero-overlay"></div>
+    </div>
+
+    <!-- Content Grid (Overlaps Hero) -->
+    <div class="amz-content-grid">
+        <!-- Card 1: Shop by Category (Quad) -->
+        <div class="amz-card">
+            <h3 class="amz-card-title">Shop by Category</h3>
+            <div class="amz-card-content">
+                <div class="amz-quad-grid">
+                    @foreach($categories->take(4) as $category)
+                        <a href="{{ route('products.index', ['category' => $category->id]) }}" class="amz-quad-item">
+                            <img src="https://source.unsplash.com/random/300x300/?{{ $category->slug }}" class="amz-quad-img" alt="{{ $category->name }}">
+                            <span class="amz-quad-label">{{ $category->name }}</span>
+                        </a>
+                    @endforeach
                 </div>
             </div>
+            <a href="{{ route('categories') }}" class="amz-card-link">See all categories</a>
+        </div>
+
+        <!-- Card 2: Deal of the Day (Single) -->
+        <div class="amz-card">
+            <h3 class="amz-card-title">Deal of the Day</h3>
+            <div class="amz-card-content">
+                @if($flashDeals->count() > 0)
+                    @php $deal = $flashDeals->first(); @endphp
+                    <a href="{{ route('products.show', $deal->slug) }}" class="d-block h-100">
+                        <img src="{{ $deal->image_url ?? 'https://source.unsplash.com/random/600x600/?gadget' }}" class="amz-single-img" alt="{{ $deal->name }}">
+                        <div class="mt-2">
+                            <span class="badge bg-danger">Up to 50% off</span>
+                            <span class="fw-bold text-danger">Top Deal</span>
+                        </div>
+                        <p class="mb-0 text-truncate">{{ $deal->name }}</p>
+                    </a>
+                @else
+                    <img src="https://source.unsplash.com/random/600x600/?electronics" class="amz-single-img" alt="Deal">
+                @endif
+            </div>
+            <a href="{{ route('deals') }}" class="amz-card-link">See all deals</a>
+        </div>
+
+        <!-- Card 3: New Arrivals (Quad) -->
+        <div class="amz-card">
+            <h3 class="amz-card-title">New Arrivals</h3>
+            <div class="amz-card-content">
+                <div class="amz-quad-grid">
+                    @foreach($newProducts->take(4) as $product)
+                        <a href="{{ route('products.show', $product->slug) }}" class="amz-quad-item">
+                            <img src="{{ $product->image_url ?? 'https://source.unsplash.com/random/300x300/?tech' }}" class="amz-quad-img" alt="{{ $product->name }}">
+                            <span class="amz-quad-label text-truncate">{{ Str::limit($product->name, 15) }}</span>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+            <a href="{{ route('products.index') }}" class="amz-card-link">Shop latest products</a>
+        </div>
+
+        <!-- Card 4: Sign In (For Guests) or Featured (For Auth) -->
+        <div class="amz-card">
+            @auth
+                <h3 class="amz-card-title">Pick up where you left off</h3>
+                <div class="amz-card-content">
+                     <div class="amz-quad-grid">
+                        @foreach($featuredProducts->take(4) as $product)
+                            <a href="{{ route('products.show', $product->slug) }}" class="amz-quad-item">
+                                <img src="{{ $product->image_url ?? 'https://source.unsplash.com/random/300x300/?device' }}" class="amz-quad-img" alt="{{ $product->name }}">
+                                <span class="amz-quad-label text-truncate">{{ Str::limit($product->name, 15) }}</span>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+                <a href="{{ route('account') }}" class="amz-card-link">View your browsing history</a>
+            @else
+                <h3 class="amz-card-title">Sign in for the best experience</h3>
+                <div class="amz-card-content d-flex flex-column justify-content-center align-items-center text-center">
+                    <a href="{{ route('login') }}" class="btn btn-warning w-100 mb-3 fw-bold" style="background-color: #f7ca00; border-color: #f7ca00;">Sign in securely</a>
+                    <p class="small">New to EEZEPC? <a href="{{ route('register') }}">Start here.</a></p>
+                </div>
+            @endauth
         </div>
     </div>
 
-    <!-- Fresh Picks Section -->
-    <div class="container py-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold">Fresh Picks!</h3>
-            <a href="#" class="btn btn-outline-primary">View All</a>
-        </div>
-        
-        <div class="row">
-            <!-- Product 1 -->
-            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="card product-card h-100 shadow-sm">
-                    <div class="position-relative">
-                        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Samsung Galaxy Buds 3 FE">
-                        <span class="badge new-badge position-absolute top-0 start-0 m-2">New</span>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title">Samsung Galaxy Buds 3 FE – Black</h6>
-                        <p class="card-text price-current mb-3">Rs 33,990</p>
-                        <div class="d-grid gap-2 mt-auto">
-                            <a href="{{ route('products.show', 'samsung-buds-3-fe') }}" class="btn btn-outline-primary btn-sm">View Product</a>
-                            <div class="d-flex gap-2">
-                                <form action="{{ route('cart.add') }}" method="POST" class="flex-grow-1">
-                                    @csrf
-                                    <input type="hidden" name="id" value="samsung-buds-3-fe">
-                                    <input type="hidden" name="name" value="Samsung Galaxy Buds 3 FE – Black">
-                                    <input type="hidden" name="price" value="33990">
-                                    <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
-                                </form>
-                                <button class="btn btn-outline-danger" onclick="addToWishlist('samsung-buds-3-fe', 'Samsung Galaxy Buds 3 FE – Black', '33990')">
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 2 -->
-            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="card product-card h-100 shadow-sm">
-                    <div class="position-relative">
-                        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Corsair 3500X LX-R Black">
-                        <span class="badge new-badge position-absolute top-0 start-0 m-2">New</span>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title">Corsair 3500X RS-R ARGB Mid-Tower PC Case – Black</h6>
-                        <p class="card-text price-current mb-3">Rs 29,990</p>
-                        <div class="d-grid gap-2 mt-auto">
-                            <a href="{{ route('products.show', 'corsair-3500x-black') }}" class="btn btn-outline-primary btn-sm">View Product</a>
-                            <form action="{{ route('cart.add') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="id" value="corsair-3500x-black">
-                                <input type="hidden" name="name" value="Corsair 3500X RS-R ARGB Mid-Tower PC Case – Black">
-                                <input type="hidden" name="price" value="29990">
-                                <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 3 -->
-            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="card product-card h-100 shadow-sm">
-                    <div class="position-relative">
-                        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Corsair 3500X RS-R White">
-                        <span class="badge new-badge position-absolute top-0 start-0 m-2">New</span>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title">Corsair 3500X RS-R ARGB Mid-Tower PC Case – White</h6>
-                        <p class="card-text price-current mb-3">Rs 29,990</p>
-                        <div class="d-grid gap-2 mt-auto">
-                            <a href="{{ route('products.show', 'corsair-3500x-white') }}" class="btn btn-outline-primary btn-sm">View Product</a>
-                            <form action="{{ route('cart.add') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="id" value="corsair-3500x-white">
-                                <input type="hidden" name="name" value="Corsair 3500X RS-R ARGB Mid-Tower PC Case – White">
-                                <input type="hidden" name="price" value="29990">
-                                <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 4 -->
-            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="card product-card h-100 shadow-sm">
-                    <div class="position-relative">
-                        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Tecno Spark Go 2">
-                        <span class="badge new-badge position-absolute top-0 start-0 m-2">New</span>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title">Tecno Spark Go 2 (4GB, 64GB, Ink Black)</h6>
-                        <p class="card-text price-current mb-3">Rs 22,990</p>
-                        <div class="d-grid gap-2 mt-auto">
-                            <a href="{{ route('products.show', 'tecno-spark-go-2') }}" class="btn btn-outline-primary btn-sm">View Product</a>
-                            <form action="{{ route('cart.add') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="id" value="tecno-spark-go-2">
-                                <input type="hidden" name="name" value="Tecno Spark Go 2 (4GB, 64GB, Ink Black)">
-                                <input type="hidden" name="price" value="22990">
-                                <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+    <!-- Horizontal Scroll Section: Best Sellers -->
+    <div class="container-fluid px-4 mb-4">
+        <div class="bg-white p-4 shadow-sm">
+            <h3 class="amz-card-title mb-3">Best Sellers in Electronics</h3>
+            <div class="d-flex overflow-auto pb-3" style="gap: 20px;">
+                @foreach($featuredProducts as $product)
+                    <a href="{{ route('products.show', $product->slug) }}" class="text-decoration-none text-dark" style="min-width: 200px;">
+                        <img src="{{ $product->image_url ?? 'https://source.unsplash.com/random/200x200/?electronics' }}" class="img-fluid mb-2" style="height: 200px; object-fit: contain;">
+                        <div class="small text-truncate">{{ $product->name }}</div>
+                        <div class="text-danger fw-bold">${{ number_format($product->price, 2) }}</div>
+                    </a>
+                @endforeach
             </div>
         </div>
     </div>
-
-    <!-- What's Hot Section -->
-    <div class="bg-light py-5">
-        <div class="container">
-            <h3 class="fw-bold mb-4">What's Hot</h3>
-    <div class="row">
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="text-center">
-                        <img src="https://via.placeholder.com/200x150" class="img-fluid rounded mb-3" alt="iPad x EEZEPC">
-                        <h6>iPad x EEZEPC</h6>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="text-center">
-                        <img src="https://via.placeholder.com/200x150" class="img-fluid rounded mb-3" alt="FC26 x EEZEPC">
-                        <h6>FC26 x EEZEPC</h6>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="text-center">
-                        <img src="https://via.placeholder.com/200x150" class="img-fluid rounded mb-3" alt="EEZEPC x Lenovo">
-                        <h6>EEZEPC x Lenovo</h6>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="text-center">
-                        <img src="https://via.placeholder.com/200x150" class="img-fluid rounded mb-3" alt="Infinix eezepc">
-                        <h6>Infinix eezepc</h6>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Flash Deals Section -->
-    <div class="container py-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold">Flash Deals</h3>
-            <a href="#" class="btn btn-outline-primary">View All</a>
-        </div>
-        
-        <div class="row">
-            <!-- Flash Deal Product 1 -->
-            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="card product-card h-100 shadow-sm">
-                    <div class="position-relative">
-                        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Apple iPhone Air 256GB">
-                        <span class="badge flash-deal-badge position-absolute top-0 start-0 m-2">-3%</span>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title">Apple iPhone Air 256GB – Sky Blue (PTA Approved)</h6>
-                        <p class="card-text">
-                            <small class="price-original">Rs 479,990</small>
-                            <span class="price-current ms-2">Rs 464,990</span>
-                        </p>
-                        <div class="d-grid gap-2 mt-auto">
-                            <a href="{{ route('products.show', 'apple-iphone-air-256gb') }}" class="btn btn-outline-primary btn-sm">View Product</a>
-                            <form action="{{ route('cart.add') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="id" value="apple-iphone-air-256gb">
-                                <input type="hidden" name="name" value="Apple iPhone Air 256GB – Sky Blue (PTA Approved)">
-                                <input type="hidden" name="price" value="464990">
-                                <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Flash Deal Product 2 -->
-            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="card product-card h-100 shadow-sm">
-                    <div class="position-relative">
-                        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="LG 50″ 4K UHD AI TV">
-                        <span class="badge flash-deal-badge position-absolute top-0 start-0 m-2">-2%</span>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title">LG 50″ 4K UHD AI TV UA84 HDR10 Smart TV (2025)</h6>
-                        <p class="card-text">
-                            <small class="price-original">Rs 167,990</small>
-                            <span class="price-current ms-2">Rs 163,990</span>
-                        </p>
-                        <div class="d-grid gap-2 mt-auto">
-                            <a href="{{ route('products.show', 'lg-50-4k-tv') }}" class="btn btn-outline-primary btn-sm">View Product</a>
-                            <form action="{{ route('cart.add') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="id" value="lg-50-4k-tv">
-                                <input type="hidden" name="name" value="LG 50″ 4K UHD AI TV UA84 HDR10 Smart TV (2025)">
-                                <input type="hidden" name="price" value="163990">
-                                <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Flash Deal Product 3 -->
-            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="card product-card h-100 shadow-sm">
-                    <div class="position-relative">
-                        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Google Pixel 10 Pro XL">
-                        <span class="badge flash-deal-badge position-absolute top-0 start-0 m-2">-7%</span>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title">Google Pixel 10 Pro XL (16GB, 256GB, Obsidian)</h6>
-                        <p class="card-text">
-                            <small class="price-original">Rs 334,990</small>
-                            <span class="price-current ms-2">Rs 312,990</span>
-                        </p>
-                        <div class="d-grid gap-2 mt-auto">
-                            <a href="{{ route('products.show', 'google-pixel-10-pro-xl') }}" class="btn btn-outline-primary btn-sm">View Product</a>
-                            <form action="{{ route('cart.add') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="id" value="google-pixel-10-pro-xl">
-                                <input type="hidden" name="name" value="Google Pixel 10 Pro XL (16GB, 256GB, Obsidian)">
-                                <input type="hidden" name="price" value="312990">
-                                <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Flash Deal Product 4 -->
-            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="card product-card h-100 shadow-sm">
-                    <div class="position-relative">
-                        <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Samsung Galaxy Buds Core">
-                        <span class="badge flash-deal-badge position-absolute top-0 start-0 m-2">-26%</span>
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title">Samsung Galaxy Buds Core True Wireless Earbuds – Black</h6>
-                        <p class="card-text">
-                            <small class="price-original">Rs 13,590</small>
-                            <span class="price-current ms-2">Rs 9,990</span>
-                        </p>
-                        <div class="d-grid gap-2 mt-auto">
-                            <a href="{{ route('products.show', 'samsung-buds-core') }}" class="btn btn-outline-primary btn-sm">View Product</a>
-                            <form action="{{ route('cart.add') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="id" value="samsung-buds-core">
-                                <input type="hidden" name="name" value="Samsung Galaxy Buds Core True Wireless Earbuds – Black">
-                                <input type="hidden" name="price" value="9990">
-                                <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to basket</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div>
-
-    <!-- Gear Up This Month Section -->
-    <div class="bg-light py-5">
-        <div class="container">
-            <h3 class="fw-bold mb-4">Gear Up This Month</h3>
-            <div class="row">
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="text-center">
-                        <img src="https://via.placeholder.com/200x150" class="img-fluid rounded mb-3" alt="Haier x EEZEPC">
-                        <h6>Haier x EEZEPC</h6>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="text-center">
-                        <img src="https://via.placeholder.com/200x150" class="img-fluid rounded mb-3" alt="Xiaomi x EEZEPC">
-                        <h6>Xiaomi x EEZEPC</h6>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="text-center">
-                        <img src="https://via.placeholder.com/200x150" class="img-fluid rounded mb-3" alt="Anker x EEZEPC">
-                        <h6>Anker x EEZEPC</h6>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="text-center">
-                        <img src="https://via.placeholder.com/200x150" class="img-fluid rounded mb-3" alt="Andaseat">
-                        <h6>Andaseat</h6>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
 </div>
-
-@push('scripts')
-<script>
-function addToWishlist(productId, productName, productPrice) {
-    // Get CSRF token
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    
-    // Show loading state
-    const button = event.target;
-    const originalText = button.innerHTML;
-    button.innerHTML = '<span class="loading-spinner"></span>';
-    button.disabled = true;
-    
-    // Make AJAX request
-    fetch('/wishlist/add', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        },
-        body: JSON.stringify({
-            id: productId,
-            name: productName,
-            price: productPrice
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Reset button
-        button.innerHTML = originalText;
-        button.disabled = false;
-        
-        if (data.success) {
-            // Show success message
-            showMessage(data.message, 'success');
-            // Update wishlist count in navbar
-            updateWishlistCount();
-        } else {
-            // Show error message
-            showMessage(data.message, 'warning');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        button.innerHTML = originalText;
-        button.disabled = false;
-        showMessage('Error adding to wishlist', 'danger');
-    });
-}
-
-function showMessage(message, type) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    
-    document.body.appendChild(alertDiv);
-    
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-        if (alertDiv.parentNode) {
-            alertDiv.remove();
-        }
-    }, 3000);
-}
-
-function updateWishlistCount() {
-    // Update wishlist count in navbar
-    const wishlistBadge = document.querySelector('.nav-icon .badge');
-    if (wishlistBadge) {
-        const currentCount = parseInt(wishlistBadge.textContent) || 0;
-        wishlistBadge.textContent = currentCount + 1;
-        wishlistBadge.style.transform = 'scale(1.2)';
-        wishlistBadge.style.transition = 'transform 0.3s ease';
-        setTimeout(() => {
-            wishlistBadge.style.transform = 'scale(1)';
-        }, 300);
-    }
-}
-</script>
-@endpush
 @endsection

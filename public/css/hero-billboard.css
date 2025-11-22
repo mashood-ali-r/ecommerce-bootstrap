@@ -1,0 +1,99 @@
+/* ============================================
+   HERO BILLBOARD SECTION
+   ============================================ */
+.hero-billboard {
+    background: var(--vibrant-purple);
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.billboard-content {
+    width: 100%;
+    padding: var(--space-10) 0;
+}
+
+.billboard-text {
+    padding: var(--space-8) 0;
+}
+
+.billboard-title {
+    font-size: 64px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: var(--space-4);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+}
+
+.billboard-subtitle {
+    font-size: 32px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: var(--space-6);
+}
+
+.billboard-cta {
+    display: inline-block;
+    background: white;
+    color: var(--vibrant-purple);
+    padding: var(--space-4) var(--space-8);
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all var(--transition-base);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.billboard-cta:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    color: var(--purple-hover);
+}
+
+.billboard-image {
+    text-align: center;
+}
+
+.billboard-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+}
+
+/* Responsive Billboard */
+@media (max-width: 992px) {
+    .billboard-title {
+        font-size: 48px;
+    }
+
+    .billboard-subtitle {
+        font-size: 24px;
+    }
+
+    .hero-billboard {
+        min-height: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .billboard-title {
+        font-size: 36px;
+    }
+
+    .billboard-subtitle {
+        font-size: 20px;
+    }
+
+    .billboard-text {
+        text-align: center;
+    }
+
+    .billboard-cta {
+        width: 100%;
+        text-align: center;
+    }
+}

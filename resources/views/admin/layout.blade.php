@@ -10,82 +10,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
-            --sidebar-width: 250px;
-            --header-height: 60px;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .admin-sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: var(--sidebar-width);
-            background: #2c3e50;
-            color: white;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-        
-        .admin-sidebar .brand {
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .admin-sidebar .nav-link {
-            color: rgba(255,255,255,0.8);
-            padding: 12px 20px;
-            transition: all 0.3s;
-        }
-        
-        .admin-sidebar .nav-link:hover,
-        .admin-sidebar .nav-link.active {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-        
-        .admin-content {
-            margin-left: var(--sidebar-width);
-            min-height: 100vh;
-            background: #f8f9fa;
-        }
-        
-        .admin-header {
-            background: white;
-            padding: 15px 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .stat-card .icon {
-            font-size: 40px;
-            opacity: 0.3;
-        }
-    </style>
+    <!-- Custom CSS with Apple-Style Design -->
+    <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
     
     @stack('styles')
 </head>
 <body>
+    @include('partials.loading')
+    
     <!-- Sidebar -->
     <div class="admin-sidebar">
         <div class="brand">

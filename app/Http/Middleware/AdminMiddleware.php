@@ -15,13 +15,15 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Simple admin check - in production, use proper authentication
-        // For now, just allow access (you can add email check later)
-        
-        // Example: Check if user is logged in and is admin
-        // if (!auth()->check() || !auth()->user()->is_admin) {
-        //     return redirect('/')->with('error', 'Unauthorized access');
-        // }
+        // Check if user is logged in
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('error', 'Please login to access the admin panel.');
+        }
+
+        // Check if user is an admin
+        if (!auth()->user()->is_admin) {
+            return redirect()->route('home')->with('error', 'Unauthorized access. Admin privileges required.');
+        }
         
         return $next($request);
     }

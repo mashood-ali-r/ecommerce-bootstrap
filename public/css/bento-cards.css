@@ -1,0 +1,274 @@
+/* ============================================
+   BENTO BOX CARD SYSTEM
+   ============================================ */
+
+/* Base Bento Card */
+.bento-card {
+    background: var(--card-white);
+    border-radius: 0;
+    /* Sharp corners for structured look */
+    box-shadow: var(--card-shadow);
+    padding: var(--space-6);
+    transition: all var(--transition-base);
+    height: 100%;
+}
+
+.bento-card:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-4px);
+}
+
+.bento-card-title {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--dark-charcoal);
+    margin-bottom: var(--space-4);
+    letter-spacing: -0.02em;
+}
+
+/* Bento Grid Container */
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-6);
+    margin-top: -80px;
+    /* Float over hero section */
+    position: relative;
+    z-index: 10;
+}
+
+/* Quadrant Card - 2x2 Grid */
+.bento-card.quadrant-card .category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+}
+
+.category-item {
+    text-align: center;
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.category-item:hover {
+    background: var(--light-gray-bg);
+    transform: scale(1.05);
+}
+
+.category-item img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-2);
+}
+
+.category-item-label {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--dark-charcoal);
+}
+
+/* Single Focus Card - Deal of the Day */
+.bento-card.single-focus-card {
+    text-align: center;
+}
+
+.single-focus-card .product-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-4);
+}
+
+.single-focus-card .product-name {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--dark-charcoal);
+    margin-bottom: var(--space-2);
+}
+
+.single-focus-card .price-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.single-focus-card .old-price {
+    font-size: var(--font-size-lg);
+    color: var(--apple-gray);
+    text-decoration: line-through;
+}
+
+.single-focus-card .new-price {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--vibrant-purple);
+}
+
+.single-focus-card .cta-button {
+    background: var(--vibrant-purple);
+    color: white;
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    width: 100%;
+}
+
+.single-focus-card .cta-button:hover {
+    background: var(--purple-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Scrollable Card - Best Sellers */
+.bento-card.scrollable-card {
+    overflow: hidden;
+}
+
+.scrollable-card .scroll-container {
+    display: flex;
+    gap: var(--space-3);
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding-bottom: var(--space-2);
+    scrollbar-width: thin;
+    scrollbar-color: var(--vibrant-purple) var(--light-gray-bg);
+}
+
+.scrollable-card .scroll-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.scrollable-card .scroll-container::-webkit-scrollbar-track {
+    background: var(--light-gray-bg);
+    border-radius: 3px;
+}
+
+.scrollable-card .scroll-container::-webkit-scrollbar-thumb {
+    background: var(--vibrant-purple);
+    border-radius: 3px;
+}
+
+.scrollable-card .mini-product-card {
+    min-width: 180px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.scrollable-card .mini-product-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-2);
+}
+
+.scrollable-card .mini-product-name {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--dark-charcoal);
+    margin-bottom: var(--space-1);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.scrollable-card .mini-product-price {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--vibrant-purple);
+}
+
+/* Banner Card - New Arrivals */
+.bento-card.banner-card {
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+    min-height: 300px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.banner-card .banner-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.banner-card .banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    z-index: 2;
+}
+
+.banner-card .banner-content {
+    position: relative;
+    z-index: 3;
+    padding: var(--space-6);
+    color: white;
+}
+
+.banner-card .banner-title {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    margin-bottom: var(--space-2);
+}
+
+.banner-card .banner-link {
+    color: white;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    transition: all var(--transition-base);
+}
+
+.banner-card .banner-link:hover {
+    gap: var(--space-2);
+}
+
+.banner-card .banner-link::after {
+    content: "→";
+    font-size: var(--font-size-xl);
+}
+
+/* Responsive Bento Grid */
+@media (max-width: 1200px) {
+    .bento-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-4);
+    }
+}
+
+@media (max-width: 768px) {
+    .bento-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+        margin-top: -40px;
+    }
+
+    .bento-card {
+        padding: var(--space-4);
+    }
+}
