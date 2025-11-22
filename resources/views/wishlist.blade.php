@@ -9,7 +9,7 @@
     @if(count(session('wishlist', [])) > 0)
         <div class="row">
             @foreach(session('wishlist', []) as $item)
-            <div class="col-lg-4 col-md-6 mb-4">
+            <div class="col-lg-4 col-md-6 mb-4" id="wishlist-item-{{ $item['id'] }}">
                 <div class="card product-card h-100 shadow-sm">
                     <div class="position-relative">
                         <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="{{ $item['name'] }}">
@@ -22,13 +22,9 @@
                         <p class="card-text price-current mb-3">Rs {{ number_format($item['price']) }}</p>
                         <div class="d-grid gap-2 mt-auto">
                             <a href="{{ route('products.show', $item['id']) }}" class="btn btn-outline-primary btn-sm">View Product</a>
-                            <form action="{{ route('cart.add') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="id" value="{{ $item['id'] }}">
-                                <input type="hidden" name="name" value="{{ $item['name'] }}">
-                                <input type="hidden" name="price" value="{{ $item['price'] }}">
-                                <button type="submit" class="btn btn-primary w-100 btn-ripple">Add to Basket</button>
-                            </form>
+                            <button type="button" class="btn btn-primary w-100 btn-ripple" onclick="moveToCart('{{ $item['id'] }}', '{{ $item['name'] }}', '{{ $item['price'] }}')">
+                                <i class="fas fa-shopping-cart me-1"></i>Move to Cart
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -55,30 +51,88 @@
 <script>
 function removeFromWishlist(productId) {
     if (confirm('Are you sure you want to remove this item from your wishlist?')) {
-        // Make AJAX request to remove from wishlist
         fetch('/wishlist/remove', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
-            body: JSON.stringify({
-                id: productId
-            })
+            body: JSON.stringify({ id: productId })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Reload the page to update the wishlist
-                location.reload();
+                const item = document.getElementById('wishlist-item-' + productId);
+                if (item) {
+                    item.style.transition = 'opacity 0.3s ease';
+                    item.style.opacity = '0';
+                    setTimeout(() => {
+                        item.remove();
+                        if (data.count === 0) {
+                            location.reload();
+                        }
+                    }, 300);
+                }
+                showMessage(data.message, 'success');
             } else {
-                alert('Error removing item from wishlist');
+                showMessage(data.message || 'Error removing item', 'danger');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error removing item from wishlist');
+            showMessage('Error removing item from wishlist', 'danger');
         });
+    }
+}
+
+function moveToCart(productId, productName, productPrice) {
+    fetch('/wishlist/move-to-cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ id: productId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const item = document.getElementById('wishlist-item-' + productId);
+            if (item) {
+                item.style.transition = 'opacity 0.3s ease';
+                item.style.opacity = '0';
+                setTimeout(() => {
+                    item.remove();
+                    if (data.wishlist_count === 0) {
+                        location.reload();
+                    }
+                }, 300);
+            }
+            showMessage(data.message, 'success');
+            updateCartCount(data.cart_count);
+        } else {
+            showMessage(data.message || 'Error moving item to cart', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage('Error moving item to cart', 'danger');
+    });
+}
+
+function showMessage(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+    document.body.appendChild(alertDiv);
+    setTimeout(() => { if (alertDiv.parentNode) alertDiv.remove(); }, 3000);
+}
+
+function updateCartCount(count) {
+    const cartBadge = document.querySelector('.nav-link[href*="cart"] .badge');
+    if (cartBadge) {
+        cartBadge.textContent = count;
     }
 }
 </script>

@@ -20,7 +20,7 @@
             <a href="{{ route('account') }}" class="text-dark me-3 position-relative nav-icon">
                 <i class="fas fa-user fs-5"></i>
             </a>
-            <a href="{{ route('wishlist') }}" class="text-dark me-3 position-relative nav-icon">
+            <a href="{{ route('wishlist.index') }}" class="text-dark me-3 position-relative nav-icon">
                 <i class="fas fa-heart fs-5"></i>
                 <span class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">{{ count(session('wishlist', [])) }}</span>
             </a>

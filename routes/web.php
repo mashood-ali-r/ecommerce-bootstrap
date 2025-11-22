@@ -11,29 +11,17 @@ use App\Http\Controllers\CartController;
 */
 
 // Home page
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-// Products page
-Route::get('/products', function () {
-    return view('products.index');
-})->name('products.index');
+// Products routes
+Route::get('/products', [App\Http\Controllers\ProductController::class, 'index'])->name('products.index');
+Route::get('/products/search', [App\Http\Controllers\ProductController::class, 'search'])->name('products.search');
+Route::get('/products/{slug}', [App\Http\Controllers\ProductController::class, 'show'])->name('products.show');
 
-// Product show page
-Route::get('/products/{id}', function ($id) {
-    return view('products.show', compact('id'));
-})->name('products.show');
-
-// Product search
-Route::get('/products/search', function () {
-    return view('products.index');
-})->name('products.search');
-
-// Checkout page
-Route::get('/checkout', function () {
-    return view('checkout');
-})->name('checkout');
+// Checkout routes
+Route::get('/checkout', [App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout');
+Route::post('/checkout', [App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/checkout/success', [App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 
 // Contact page
 Route::get('/contact', function () {
@@ -45,45 +33,14 @@ Route::get('/account', function () {
     return view('account');
 })->name('account');
 
-// Wishlist page
-Route::get('/wishlist', function () {
-    return view('wishlist');
-})->name('wishlist');
-
-// Add to wishlist
-Route::post('/wishlist/add', function (Request $request) {
-    $wishlist = session('wishlist', []);
-    $productId = $request->input('id');
-    $productName = $request->input('name');
-    $productPrice = $request->input('price');
-    
-    if (!isset($wishlist[$productId])) {
-        $wishlist[$productId] = [
-            'id' => $productId,
-            'name' => $productName,
-            'price' => $productPrice,
-            'added_at' => now()
-        ];
-        session(['wishlist' => $wishlist]);
-        return response()->json(['success' => true, 'message' => 'Added to wishlist!']);
-    }
-    
-    return response()->json(['success' => false, 'message' => 'Already in wishlist!']);
-})->name('wishlist.add');
-
-// Remove from wishlist
-Route::post('/wishlist/remove', function (Request $request) {
-    $wishlist = session('wishlist', []);
-    $productId = $request->input('id');
-    
-    if (isset($wishlist[$productId])) {
-        unset($wishlist[$productId]);
-        session(['wishlist' => $wishlist]);
-        return response()->json(['success' => true, 'message' => 'Removed from wishlist!']);
-    }
-    
-    return response()->json(['success' => false, 'message' => 'Item not found in wishlist!']);
-})->name('wishlist.remove');
+// Wishlist routes
+Route::prefix('wishlist')->group(function () {
+    Route::get('/', [App\Http\Controllers\WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/add', [App\Http\Controllers\WishlistController::class, 'add'])->name('wishlist.add');
+    Route::post('/remove', [App\Http\Controllers\WishlistController::class, 'remove'])->name('wishlist.remove');
+    Route::post('/move-to-cart', [App\Http\Controllers\WishlistController::class, 'moveToCart'])->name('wishlist.moveToCart');
+    Route::post('/clear', [App\Http\Controllers\WishlistController::class, 'clear'])->name('wishlist.clear');
+});
 
 // Categories page
 Route::get('/categories', function () {
@@ -100,6 +57,17 @@ Route::post('/newsletter/subscribe', function () {
     return back()->with('success', 'Thank you for subscribing!');
 })->name('newsletter.subscribe');
 
+// Admin Routes
+Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
+    // Dashboard
+    Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    
+    // Products CRUD
+    Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
+    
+    // Categories CRUD
+    Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);
+});
 
 // 🛒 Cart Routes
 Route::prefix('cart')->group(function () {

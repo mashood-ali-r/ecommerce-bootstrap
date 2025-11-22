@@ -13,26 +13,44 @@ class CartController extends Controller
         return view('cart', compact('cart'));
     }
 
-    // Add product to cart
+    /**
+     * Add product to cart
+     */
     public function add(Request $request)
     {
+        $request->validate([
+            'id' => 'required',
+            'name' => 'required|string',
+            'price' => 'required|numeric'
+        ]);
+
         $productId = $request->input('id');
         $productName = $request->input('name');
         $productPrice = $request->input('price');
+        $quantity = $request->input('quantity', 1);
 
         $cart = session()->get('cart', []);
 
-        if(isset($cart[$productId])) {
-            $cart[$productId]['quantity']++;
+        if (isset($cart[$productId])) {
+            $cart[$productId]['quantity'] += $quantity;
         } else {
             $cart[$productId] = [
                 "name" => $productName,
-                "quantity" => 1,
+                "quantity" => $quantity,
                 "price" => $productPrice
             ];
         }
 
         session(['cart' => $cart]);
+
+        // Return JSON for AJAX requests
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Product added to cart!',
+                'cart_count' => count($cart)
+            ]);
+        }
 
         return back()->with('success', 'Product added to cart!');
     }
