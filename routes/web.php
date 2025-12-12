@@ -127,15 +127,18 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
 
     // Products CRUD
     Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
+    Route::post('/products/reorder', [App\Http\Controllers\Admin\ProductController::class, 'reorder'])->name('products.reorder');
 
     // Product Images
     Route::get('/products/{product}/images', [App\Http\Controllers\Admin\ProductImageController::class, 'index'])->name('products.images');
     Route::post('/products/{product}/images', [App\Http\Controllers\Admin\ProductImageController::class, 'store'])->name('products.images.store');
-    Route::put('/products/{product}/images/{image}/set-primary', [App\Http\Controllers\Admin\ProductImageController::class, 'setPrimary'])->name('products.images.set-primary');
-    Route::delete('/products/{product}/images/{image}', [App\Http\Controllers\Admin\ProductImageController::class, 'destroy'])->name('products.images.destroy');
+    Route::post('/products/{product}/images/bulk', [App\Http\Controllers\Admin\ProductImageController::class, 'storeBulk'])->name('products.images.store-bulk');
+    Route::put('/products/{product}/images/{productImage}/set-primary', [App\Http\Controllers\Admin\ProductImageController::class, 'setPrimary'])->name('products.images.set-primary');
+    Route::delete('/products/{product}/images/{productImage}', [App\Http\Controllers\Admin\ProductImageController::class, 'destroy'])->name('products.images.destroy');
 
     // Categories CRUD
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);
+    Route::post('/categories/reorder', [App\Http\Controllers\Admin\CategoryController::class, 'reorder'])->name('categories.reorder');
 });
 
 // 🛒 Cart Routes

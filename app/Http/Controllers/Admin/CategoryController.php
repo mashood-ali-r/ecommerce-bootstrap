@@ -36,7 +36,7 @@ class CategoryController extends Controller
         $parentCategories = Category::whereNull('parent_id')
             ->where('is_active', true)
             ->get();
-        
+
         return view('admin.categories.create', compact('parentCategories'));
     }
 
@@ -46,7 +46,7 @@ class CategoryController extends Controller
     public function store(CategoryRequest $request)
     {
         $data = $request->validated();
-        
+
         // Auto-generate slug if not provided
         if (empty($data['slug'])) {
             $data['slug'] = Str::slug($data['name']);
@@ -79,7 +79,7 @@ class CategoryController extends Controller
             ->where('is_active', true)
             ->where('id', '!=', $category->id)
             ->get();
-        
+
         return view('admin.categories.edit', compact('category', 'parentCategories'));
     }
 
@@ -114,5 +114,23 @@ class CategoryController extends Controller
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category deleted successfully!');
+    }
+
+    /**
+     * Reorder categories via drag and drop
+     */
+    public function reorder(Request $request)
+    {
+        $request->validate([
+            'items' => 'required|array',
+            'items.*.id' => 'required|exists:categories,id',
+            'items.*.sort_order' => 'required|integer',
+        ]);
+
+        foreach ($request->items as $item) {
+            Category::where('id', $item['id'])->update(['sort_order' => $item['sort_order']]);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

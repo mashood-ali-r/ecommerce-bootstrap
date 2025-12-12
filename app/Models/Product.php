@@ -34,6 +34,7 @@ class Product extends Model
         'views',
         'rating',
         'reviews_count',
+        'sort_order',
     ];
 
     /**
@@ -73,6 +74,21 @@ class Product extends Model
     public function primaryImage()
     {
         return $this->hasOne(ProductImage::class)->where('is_primary', true);
+    }
+
+    /**
+     * Get the primary image path (accessor for convenience).
+     * This allows using $product->image in views.
+     */
+    public function getImageAttribute(): ?string
+    {
+        $primary = $this->primaryImage;
+        if ($primary) {
+            return $primary->image_path;
+        }
+        // Fallback to first image if no primary
+        $firstImage = $this->images()->first();
+        return $firstImage ? $firstImage->image_path : null;
     }
 
     /**

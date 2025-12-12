@@ -21,22 +21,23 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        $productId = $this->route('product');
-        
+        $product = $this->route('product');
+        $productId = $product ? $product->id : null;
+
         return [
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:products,slug,' . $productId,
+            'slug' => 'nullable|string|max:255|unique:products,slug,' . $productId,
             'sku' => 'required|string|max:255|unique:products,sku,' . $productId,
             'description' => 'required|string',
             'specifications' => 'nullable|string',
             'price' => 'required|numeric|min:0',
-            'old_price' => 'nullable|numeric|min:0|gt:price',
+            'old_price' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'is_active' => 'boolean',
-            'is_featured' => 'boolean',
-            'is_new' => 'boolean',
-            'is_flash_deal' => 'boolean',
+            'is_active' => 'sometimes|boolean',
+            'is_featured' => 'sometimes|boolean',
+            'is_new' => 'sometimes|boolean',
+            'is_flash_deal' => 'sometimes|boolean',
         ];
     }
 
@@ -49,13 +50,11 @@ class ProductRequest extends FormRequest
             'category_id.required' => 'Please select a category',
             'category_id.exists' => 'Selected category does not exist',
             'name.required' => 'Product name is required',
-            'slug.required' => 'Product slug is required',
             'slug.unique' => 'This slug is already in use',
             'sku.required' => 'SKU is required',
             'sku.unique' => 'This SKU is already in use',
             'price.required' => 'Price is required',
             'price.numeric' => 'Price must be a number',
-            'old_price.gt' => 'Old price must be greater than current price',
             'stock.required' => 'Stock quantity is required',
         ];
     }

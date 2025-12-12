@@ -47,18 +47,14 @@
                                     
                                     <!-- Amazon-style inline actions -->
                                     <div class="d-flex flex-wrap align-items-center mt-3" style="font-size: 12px;">
-                                        <!-- Quantity Dropdown -->
-                                        <form action="{{ route('cart.update') }}" method="POST" class="d-inline me-3">
-                                            @csrf
-                                            <input type="hidden" name="id" value="{{ $id }}">
-                                            <select name="quantity" 
-                                                    style="width: 80px; padding: 5px 8px; font-size: 13px; border-radius: 7px; background-color: #F0F2F2; border: 1px solid #D5D9D9; cursor: pointer;"
-                                                    onchange="this.form.submit()">
-                                                @for($i = 1; $i <= 10; $i++)
-                                                    <option value="{{ $i }}" {{ $item['quantity'] == $i ? 'selected' : '' }}>Qty: {{ $i }}</option>
-                                                @endfor
-                                            </select>
-                                        </form>
+                                        <!-- Quantity Input (AJAX) -->
+                                        <div class="d-inline me-3">
+                                            <input type="number" value="{{ $item['quantity'] }}" min="1" 
+                                                   class="form-control form-control-sm text-center d-inline-block quantity-input" 
+                                                   data-id="{{ $id }}"
+                                                   style="width: 70px; font-size: 13px; background-color: #F0F2F2;"
+                                                   onchange="updateCartQuantity(this, '{{ $id }}')">
+                                        </div>
                                         
                                         <span style="color: #DDD; margin-right: 12px;">|</span>
                                         
@@ -81,9 +77,9 @@
                                     <span style="font-size: 18px; font-weight: 700; color: #0F1111;">
                                         Rs {{ number_format($item['price']) }}
                                     </span>
-                                    @if($item['quantity'] > 1)
+                                    @if($item['quantity'] >= 1)
                                         <div style="font-size: 12px; color: #565959;">
-                                            Total: Rs {{ number_format($subtotal) }}
+                                            Total: <span class="item-subtotal">Rs {{ number_format($subtotal) }}</span>
                                         </div>
                                     @endif
                                 </div>
@@ -92,8 +88,8 @@
                         
                         <div class="text-end pt-2">
                             <span style="font-size: 18px; color: #0F1111;">
-                                Subtotal ({{ array_sum(array_column($cart, 'quantity')) }} items): 
-                                <span style="font-weight: 700;">Rs {{ number_format($total) }}</span>
+                                Subtotal (<span class="cart-count">{{ array_sum(array_column($cart, 'quantity')) }}</span> items): 
+                                <span style="font-weight: 700;" class="cart-total">Rs {{ number_format($total) }}</span>
                             </span>
                         </div>
                     @else
@@ -123,13 +119,10 @@
                 @if(isset($cart) && count($cart) > 0)
                     <div class="bg-white p-4 shadow-sm rounded">
                         <p style="font-size: 18px; color: #0F1111; margin-bottom: 16px;">
-                            Subtotal ({{ array_sum(array_column($cart, 'quantity')) }} items): 
-                            <span style="font-weight: 700;">Rs {{ number_format($total) }}</span>
+                            Subtotal (<span class="cart-count">{{ array_sum(array_column($cart, 'quantity')) }}</span> items): 
+                            <span style="font-weight: 700;" class="cart-total">Rs {{ number_format($total) }}</span>
                         </p>
-                        <div class="d-flex align-items-start mb-3">
-                            <input type="checkbox" class="me-2 mt-1" id="gift" style="accent-color: #007185;">
-                            <label for="gift" style="font-size: 13px; color: #0F1111;">This order contains a gift</label>
-                        </div>
+
                         <a href="{{ route('checkout') }}" 
                            style="display: block; width: 100%; padding: 10px; text-align: center; background: #FFD814; border: 1px solid #FCD200; border-radius: 8px; color: #0F1111; text-decoration: none; font-size: 14px;">
                             Proceed to checkout
@@ -146,4 +139,60 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<script>
+    function updateCartQuantity(input, id) {
+        const quantity = input.value;
+        if(quantity < 1) return;
+
+        // Visual feedback
+        input.style.opacity = '0.5';
+        
+        fetch('{{ route("cart.update") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                id: id,
+                quantity: quantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            input.style.opacity = '1';
+            
+            if(data.success) {
+                // Update Item Subtotal
+                const itemTotalEl = document.querySelector(`#cart-item-${id} .item-subtotal`);
+                if(itemTotalEl) itemTotalEl.textContent = 'Rs ' + data.item_subtotal;
+                
+                // Update Cart Totals
+                document.querySelectorAll('.cart-total').forEach(el => {
+                    el.textContent = 'Rs ' + data.cart_total;
+                });
+                
+                // Update Counts
+                document.querySelectorAll('.cart-count').forEach(el => {
+                    el.textContent = data.cart_count;
+                });
+
+                if(window.showEezepcToast) {
+                    window.showEezepcToast({ type: 'success', title: 'Cart Updated', message: 'Quantity updated' });
+                }
+            } else {
+                 if(window.showEezepcToast) {
+                    window.showEezepcToast({ type: 'error', title: 'Error', message: data.message });
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            input.style.opacity = '1';
+        });
+    }
+</script>
+@endpush
 @endsection

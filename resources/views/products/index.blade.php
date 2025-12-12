@@ -20,9 +20,9 @@
                             </li>
                             @foreach($categories as $category)
                                 <li class="mb-1 ps-2">
-                                    <a href="{{ route('products.index', ['category' => $category->id]) }}"
-                                        class="text-decoration-none {{ request('category') == $category->id ? 'fw-bold' : '' }}"
-                                        style="color: {{ request('category') == $category->id ? '#c7511f' : '#0f1111' }};">
+                                    <a href="{{ route('products.index', ['category' => $category->slug]) }}"
+                                        class="text-decoration-none {{ (request('category') == $category->id || request('category') == $category->slug) ? 'fw-bold' : '' }}"
+                                        style="color: {{ (request('category') == $category->id || request('category') == $category->slug) ? '#c7511f' : '#0f1111' }};">
                                         {{ $category->name }}
                                     </a>
                                     <span class="text-muted small">({{ $category->products_count }})</span>
@@ -105,10 +105,17 @@
                                 <span class="text-dark">{{ $products->firstItem() ?? 0 }}-{{ $products->lastItem() ?? 0 }}
                                     of {{ $products->total() }} results</span>
                                 @if(request('category'))
-                                    @php $currentCategory = $categories->firstWhere('id', request('category')); @endphp
+                                @if(request('category'))
+                                    @php 
+                                        $catReq = request('category');
+                                        $currentCategory = $categories->first(function($c) use ($catReq) {
+                                            return $c->id == $catReq || $c->slug == $catReq;
+                                        });
+                                    @endphp
                                     @if($currentCategory)
                                         in <span class="fw-bold">{{ $currentCategory->name }}</span>
                                     @endif
+                                @endif
                                 @endif
                             </span>
                         </div>
@@ -140,7 +147,7 @@
                     <div class="row g-3">
                         @forelse($products as $product)
                             <div class="col-xl-3 col-lg-4 col-md-6">
-                                <div class="bg-white border rounded h-100 p-3 product-card-amz">
+                                <div class="bg-white border rounded h-100 p-3 product-card-amz d-flex flex-column">
                                     <!-- Product Image -->
                                     <div class="text-center position-relative mb-2">
                                         <a href="{{ route('products.show', $product->slug) }}">
@@ -205,6 +212,9 @@
                                         <p class="mb-2" style="font-size: 12px; color: #565959;">
                                             <span style="color: #007185;">FREE Delivery</span> by EEZEPC
                                         </p>
+
+                                        <!-- Spacer to push button down -->
+                                        <div class="flex-grow-1"></div>
 
                                         <!-- Add to Cart -->
                                         <form action="{{ route('cart.add') }}" method="POST" class="mt-auto">

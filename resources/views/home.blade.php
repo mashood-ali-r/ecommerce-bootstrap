@@ -103,7 +103,7 @@
                             @endforeach
                         </div>
                     </div>
-                    <a href="{{ route('account') }}" class="amz-card-link">View your browsing history</a>
+
                 @else
                     <h3 class="amz-card-title">Sign in for the best experience</h3>
                     <div class="amz-card-content d-flex flex-column justify-content-center align-items-center text-center">

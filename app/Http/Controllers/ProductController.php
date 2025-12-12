@@ -16,8 +16,21 @@ class ProductController extends Controller
         $query = Product::with('category')->where('is_active', true);
 
         // Category filter
+        // Category filter
         if ($request->has('category') && $request->category != '') {
-            $query->where('category_id', $request->category);
+            $categoryInput = $request->category;
+
+            // If input is numeric, assume ID. If string, assume slug.
+            if (is_numeric($categoryInput)) {
+                $query->where('category_id', $categoryInput);
+            } else {
+                $category = Category::where('slug', $categoryInput)->first();
+                if ($category) {
+                    $query->where('category_id', $category->id);
+                    // Update request to use ID for view consistency if needed
+                    // $request->merge(['category' => $category->id]); 
+                }
+            }
         }
 
         // Search

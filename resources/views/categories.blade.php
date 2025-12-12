@@ -1,97 +1,59 @@
 @extends('layouts.app')
 
+@section('title', 'Shop by Category - EEZEPC.com')
+
 @section('content')
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-12">
-            <h2 class="mb-4 fw-bold">Categories</h2>
-        </div>
-    </div>
+    <div class="bg-light min-vh-100 pb-5">
+        <div class="container py-4">
+            <h1 class="fw-bold mb-4" style="color: #0f1111; font-size: 28px;">Shop by Category</h1>
 
-    <div class="row">
-        <!-- Mobile Phones & Tablets -->
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-mobile-alt fa-3x text-primary mb-3"></i>
-                    <h5 class="card-title">Mobile Phones & Tablets</h5>
-                    <p class="card-text">Latest smartphones, tablets, and mobile accessories</p>
-                    <a href="#" class="btn btn-outline-primary">Browse Products</a>
-                </div>
-            </div>
-        </div>
+            <div class="row g-4">
+                @isset($navCategories)
+                    @foreach($navCategories as $category)
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="bg-white h-100 d-flex flex-column"
+                                style="border: 1px solid #d5d9d9; border-radius: 8px; overflow: hidden; transition: box-shadow 0.2s;">
 
-        <!-- Computer Components -->
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-microchip fa-3x text-primary mb-3"></i>
-                    <h5 class="card-title">Computer Components</h5>
-                    <p class="card-text">PC components, processors, graphics cards, and more</p>
-                    <a href="#" class="btn btn-outline-primary">Browse Products</a>
-                </div>
-            </div>
-        </div>
+                                <div class="p-3 pb-0 flex-grow-1">
+                                    <h3 class="fw-bold mb-3" style="font-size: 21px; color: #0f1111;">{{ $category->name }}</h3>
 
-        <!-- Computers & Office -->
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-laptop fa-3x text-primary mb-3"></i>
-                    <h5 class="card-title">Computers & Office</h5>
-                    <p class="card-text">Laptops, desktops, monitors, and office equipment</p>
-                    <a href="#" class="btn btn-outline-primary">Browse Products</a>
-                </div>
-            </div>
-        </div>
+                                    <a href="{{ route('products.index', ['category' => $category->slug]) }}"
+                                        class="d-block text-decoration-none">
+                                        <div
+                                            style="background: #f7f7f7; height: 260px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 4px;">
+                                            <!-- Placeholder or Category Image if exists -->
+                                            <img src="https://source.unsplash.com/random/400x400/?{{ $category->slug }}"
+                                                alt="{{ $category->name }}" class="img-fluid"
+                                                style="max-height: 100%; object-fit: cover;">
+                                        </div>
+                                    </a>
+                                </div>
 
-        <!-- Consoles & Gaming -->
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-gamepad fa-3x text-primary mb-3"></i>
-                    <h5 class="card-title">Consoles & Gaming</h5>
-                    <p class="card-text">Gaming consoles, controllers, and gaming accessories</p>
-                    <a href="#" class="btn btn-outline-primary">Browse Products</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Wearable & Gadgets -->
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-watch fa-3x text-primary mb-3"></i>
-                    <h5 class="card-title">Wearable & Gadgets</h5>
-                    <p class="card-text">Smart watches, VR headsets, and wearable technology</p>
-                    <a href="#" class="btn btn-outline-primary">Browse Products</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Home Appliances -->
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-home fa-3x text-primary mb-3"></i>
-                    <h5 class="card-title">Home Appliances</h5>
-                    <p class="card-text">Kitchen appliances, air conditioners, and home gadgets</p>
-                    <a href="#" class="btn btn-outline-primary">Browse Products</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- TV & Audio/Video -->
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-tv fa-3x text-primary mb-3"></i>
-                    <h5 class="card-title">TV & Audio/Video</h5>
-                    <p class="card-text">Televisions, projectors, and home audio systems</p>
-                    <a href="#" class="btn btn-outline-primary">Browse Products</a>
-                </div>
+                                <div class="p-3 pt-2">
+                                    <a href="{{ route('products.index', ['category' => $category->slug]) }}"
+                                        class="text-decoration-none hover-link"
+                                        style="color: #007185; font-size: 14px; font-weight: 500;">
+                                        Shop now
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="col-12 text-center py-5">
+                        <h3>No categories found.</h3>
+                    </div>
+                @endisset
             </div>
         </div>
     </div>
-</div>
+
+    @push('styles')
+        <style>
+            .hover-link:hover {
+                color: #c7511f !important;
+                text-decoration: underline !important;
+            }
+        </style>
+    @endpush
 @endsection

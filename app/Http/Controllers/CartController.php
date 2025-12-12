@@ -61,7 +61,7 @@ class CartController extends Controller
         $id = $request->input('id'); // must match hidden input 'id' in Blade
         $cart = session()->get('cart', []);
 
-        if(isset($cart[$id])) {
+        if (isset($cart[$id])) {
             unset($cart[$id]);
             session(['cart' => $cart]);
             return redirect()->route('cart.view')->with('success', 'Product removed successfully!');
@@ -74,15 +74,37 @@ class CartController extends Controller
     public function update(Request $request)
     {
         $id = $request->input('id'); // must match hidden input 'id' in Blade
-        $quantity = max(1, (int)$request->input('quantity', 1)); // minimum quantity = 1
+        $quantity = max(1, (int) $request->input('quantity', 1)); // minimum quantity = 1
         $cart = session()->get('cart', []);
 
-        if(isset($cart[$id])) {
-            $cart[$id]['quantity'] = $quantity; // update the quantity
+        if (isset($cart[$id])) {
+            $cart[$id]['quantity'] = $quantity;
             session(['cart' => $cart]);
+
+            if ($request->expectsJson()) {
+                $itemSubtotal = $cart[$id]['price'] * $quantity;
+                $total = 0;
+                $count = 0;
+                foreach ($cart as $c) {
+                    $total += $c['price'] * $c['quantity'];
+                    $count += $c['quantity'];
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Quantity updated',
+                    'item_subtotal' => number_format($itemSubtotal),
+                    'cart_total' => number_format($total),
+                    'cart_count' => $count
+                ]);
+            }
+
             return redirect()->route('cart.view')->with('success', 'Quantity updated!');
         }
 
+        if ($request->expectsJson()) {
+            return response()->json(['success' => false, 'message' => 'Product not found'], 404);
+        }
         return redirect()->route('cart.view')->with('error', 'Product not found in cart.');
     }
 }

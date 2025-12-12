@@ -21,9 +21,9 @@ class ProductController extends Controller
         // Search
         if ($request->has('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%");
+                    ->orWhere('sku', 'like', "%{$search}%");
             });
         }
 
@@ -33,11 +33,11 @@ class ProductController extends Controller
         }
 
         // Status filter
-        if ($request->has('status')) {
+        if ($request->filled('status')) {
             $query->where('is_active', $request->status == 'active');
         }
 
-        $products = $query->latest()->paginate(15);
+        $products = $query->orderBy('sort_order')->paginate(15);
         $categories = Category::where('is_active', true)->get();
 
         return view('admin.products.index', compact('products', 'categories'));
@@ -58,7 +58,7 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         $data = $request->validated();
-        
+
         // Auto-generate slug if not provided
         if (empty($data['slug'])) {
             $data['slug'] = Str::slug($data['name']);
@@ -122,5 +122,23 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Product deleted successfully!');
+    }
+
+    /**
+     * Reorder products via drag and drop
+     */
+    public function reorder(Request $request)
+    {
+        $request->validate([
+            'items' => 'required|array',
+            'items.*.id' => 'required|exists:products,id',
+            'items.*.sort_order' => 'required|integer',
+        ]);
+
+        foreach ($request->items as $item) {
+            Product::where('id', $item['id'])->update(['sort_order' => $item['sort_order']]);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

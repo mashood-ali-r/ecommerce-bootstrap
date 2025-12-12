@@ -458,7 +458,8 @@
         <div class="page-header">
             <div>
                 <nav class="page-breadcrumb mb-1">
-                    <a href="{{ route('admin.dashboard') }}">Seller Central</a> / @yield('breadcrumb', 'Dashboard')
+                    <a href="{{ route('admin.dashboard') }}">Seller Central</a> /
+                    {!! $__env->yieldContent('breadcrumb', 'Dashboard') !!}
                 </nav>
                 <h1 class="page-title">@yield('page-title', 'Dashboard')</h1>
             </div>

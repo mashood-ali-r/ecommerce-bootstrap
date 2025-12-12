@@ -16,13 +16,14 @@
 
             <!-- Location Widget -->
             <div class="amz-location d-flex align-items-center px-2 py-1 rounded ms-2"
-                style="cursor: pointer; border: 1px solid transparent;">
+                style="cursor: pointer; border: 1px solid transparent;"
+                onclick="document.getElementById('countrySelector').click()">
                 <div class="me-1 align-self-end mb-1 text-white">
                     <i class="fa-solid fa-location-dot"></i>
                 </div>
                 <div class="d-flex flex-column" style="line-height: 1.1;">
                     <span style="font-size: 12px; color: #ccc;">Deliver to</span>
-                    <span class="text-white fw-bold" style="font-size: 14px;">Pakistan</span>
+                    <span class="text-white fw-bold" style="font-size: 14px;" id="deliverToCountry">Pakistan</span>
                 </div>
             </div>
         </div>
@@ -147,15 +148,27 @@
     </div>
 
     <!-- Sub-Navigation -->
-    <div class="amz-subnav">
-        <a href="{{ route('deals') }}" class="amz-subnav-link">
-            <i class="fas fa-bolt me-1" style="color: #febd69;"></i> Today's Deals
+    <div class="amz-subnav d-flex justify-content-center align-items-center"
+        style="background: #232F3E; padding: 6px 0; border-top: 1px solid rgba(255,255,255,0.1);">
+        <a href="{{ route('deals') }}" class="d-inline-flex align-items-center mx-4 text-decoration-none"
+            style="color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 400; padding: 4px 0; border-bottom: 2px solid transparent; transition: all 0.2s;"
+            onmouseover="this.style.borderBottomColor='#FF9900'; this.style.color='#fff';"
+            onmouseout="this.style.borderBottomColor='transparent'; this.style.color='rgba(255,255,255,0.9)';">
+            <i class="fas fa-bolt me-1" style="color: #FF9900; font-size: 12px;"></i>
+            Today's Deals
         </a>
-        <a href="{{ route('wishlist.index') }}" class="amz-subnav-link">
-            <i class="fas fa-heart me-1" style="color: #febd69;"></i> Your Wishlist
+        <span style="color: rgba(255,255,255,0.3);">|</span>
+        <a href="{{ route('wishlist.index') }}" class="d-inline-flex align-items-center mx-4 text-decoration-none"
+            style="color: rgba(255,255,255,0.9); font-size: 13px; font-weight: 400; padding: 4px 0; border-bottom: 2px solid transparent; transition: all 0.2s;"
+            onmouseover="this.style.borderBottomColor='#FF9900'; this.style.color='#fff';"
+            onmouseout="this.style.borderBottomColor='transparent'; this.style.color='rgba(255,255,255,0.9)';">
+            <i class="fas fa-heart me-1" style="color: #FF9900; font-size: 12px;"></i>
+            Your Wishlist
             @if(count(session('wishlist', [])) > 0)
-                <span class="badge rounded-pill ms-1"
-                    style="background: #febd69; color: #131921; font-size: 10px;">{{ count(session('wishlist', [])) }}</span>
+                <span class="ms-1"
+                    style="background: #FF9900; color: #0F1111; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px;">
+                    {{ count(session('wishlist', [])) }}
+                </span>
             @endif
         </a>
     </div>
@@ -228,11 +241,11 @@
             function displayResults(products, query) {
                 if (products.length === 0) {
                     searchResults.innerHTML = `
-                                                <div class="p-3 text-muted text-center">
-                                                    <i class="fas fa-search mb-2" style="font-size: 24px; opacity: 0.3;"></i>
-                                                    <p class="mb-0">No products found for "<strong>${escapeHtml(query)}</strong>"</p>
-                                                </div>
-                                            `;
+                                                            <div class="p-3 text-muted text-center">
+                                                                <i class="fas fa-search mb-2" style="font-size: 24px; opacity: 0.3;"></i>
+                                                                <p class="mb-0">No products found for "<strong>${escapeHtml(query)}</strong>"</p>
+                                                            </div>
+                                                        `;
                     searchResults.style.display = 'block';
                     return;
                 }
@@ -243,25 +256,25 @@
                     const price = new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR', minimumFractionDigits: 0 }).format(product.price);
 
                     html += `
-                                                <a href="/products/${product.slug}" class="search-result-item d-flex align-items-center p-2 text-decoration-none border-bottom" style="color: #333;">
-                                                    <img src="${imageUrl}" alt="${escapeHtml(product.name)}" 
-                                                         style="width: 50px; height: 50px; object-fit: contain; margin-right: 12px; background: #f8f8f8; border-radius: 4px;">
-                                                    <div class="flex-grow-1">
-                                                        <div class="fw-medium" style="font-size: 14px; line-height: 1.3;">${highlightMatch(product.name, query)}</div>
-                                                        <div style="color: #b12704; font-weight: 600; font-size: 13px;">${price}</div>
-                                                        ${product.category_name ? `<small class="text-muted">in ${escapeHtml(product.category_name)}</small>` : ''}
-                                                    </div>
-                                                </a>
-                                            `;
+                                                            <a href="/products/${product.slug}" class="search-result-item d-flex align-items-center p-2 text-decoration-none border-bottom" style="color: #333;">
+                                                                <img src="${imageUrl}" alt="${escapeHtml(product.name)}" 
+                                                                     style="width: 50px; height: 50px; object-fit: contain; margin-right: 12px; background: #f8f8f8; border-radius: 4px;">
+                                                                <div class="flex-grow-1">
+                                                                    <div class="fw-medium" style="font-size: 14px; line-height: 1.3;">${highlightMatch(product.name, query)}</div>
+                                                                    <div style="color: #b12704; font-weight: 600; font-size: 13px;">${price}</div>
+                                                                    ${product.category_name ? `<small class="text-muted">in ${escapeHtml(product.category_name)}</small>` : ''}
+                                                                </div>
+                                                            </a>
+                                                        `;
                 });
 
                 // Add "View all results" link
                 html += `
-                                            <a href="{{ route('products.search') }}?q=${encodeURIComponent(query)}&category=${searchCategory.value}" 
-                                               class="d-block p-3 text-center text-decoration-none" style="background: #f8f8f8; color: #007185; font-weight: 500;">
-                                                <i class="fas fa-search me-1"></i> View all results for "${escapeHtml(query)}"
-                                            </a>
-                                        `;
+                                                        <a href="{{ route('products.search') }}?q=${encodeURIComponent(query)}&category=${searchCategory.value}" 
+                                                           class="d-block p-3 text-center text-decoration-none" style="background: #f8f8f8; color: #007185; font-weight: 500;">
+                                                            <i class="fas fa-search me-1"></i> View all results for "${escapeHtml(query)}"
+                                                        </a>
+                                                    `;
 
                 searchResults.innerHTML = html;
                 searchResults.style.display = 'block';
@@ -327,12 +340,12 @@
             // Render countries
             function renderCountries(countries) {
                 countryList.innerHTML = countries.map(country => `
-                                                    <button class="list-group-item list-group-item-action d-flex align-items-center" 
-                                                            onclick="selectCountry('${country.cca2}', '${country.flags.png}')">
-                                                        <img src="${country.flags.png}" alt="${country.cca2}" width="30" class="me-3">
-                                                        <span>${country.name.common}</span>
-                                                    </button>
-                                                `).join('');
+                                                                <button class="list-group-item list-group-item-action d-flex align-items-center" 
+                                                                        onclick="selectCountry('${country.cca2}', '${country.flags.png}', '${country.name.common.replace(/'/g, "\\'")}')">
+                                                                    <img src="${country.flags.png}" alt="${country.cca2}" width="30" class="me-3">
+                                                                    <span>${country.name.common}</span>
+                                                                </button>
+                                                            `).join('');
             }
 
             // Search filter
@@ -343,20 +356,30 @@
             });
 
             // Select country function (global scope for onclick)
-            window.selectCountry = function (code, flagUrl) {
+            window.selectCountry = function (code, flagUrl, countryName) {
                 currentFlag.src = flagUrl;
                 currentCode.textContent = code;
                 countryModal.hide();
-                // Optional: Save preference to localStorage or cookie
-                localStorage.setItem('selectedCountry', JSON.stringify({ code, flagUrl }));
+                // Update the "Deliver to" location widget
+                const deliverTo = document.getElementById('deliverToCountry');
+                if (deliverTo && countryName) {
+                    deliverTo.textContent = countryName;
+                }
+                // Save preference to localStorage
+                localStorage.setItem('selectedCountry', JSON.stringify({ code, flagUrl, countryName }));
             };
 
             // Load saved preference
             const saved = localStorage.getItem('selectedCountry');
             if (saved) {
-                const { code, flagUrl } = JSON.parse(saved);
+                const { code, flagUrl, countryName } = JSON.parse(saved);
                 currentFlag.src = flagUrl;
                 currentCode.textContent = code;
+                // Also update "Deliver to" on page load
+                const deliverTo = document.getElementById('deliverToCountry');
+                if (deliverTo && countryName) {
+                    deliverTo.textContent = countryName;
+                }
             }
         });
     </script>

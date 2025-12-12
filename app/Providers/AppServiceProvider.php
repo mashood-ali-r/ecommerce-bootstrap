@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
 use App\View\Composers\CategoryViewComposer;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,9 +22,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Paginator::useBootstrapFive();
+
         // Share categories with navbar and category partials
         View::composer(
-            ['partials.navbar', 'partials.categories'],
+            ['partials.navbar', 'partials.categories', 'categories'],
             CategoryViewComposer::class
         );
     }

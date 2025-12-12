@@ -21,14 +21,15 @@ class CategoryRequest extends FormRequest
      */
     public function rules(): array
     {
-        $categoryId = $this->route('category');
-        
+        $category = $this->route('category');
+        $categoryId = $category ? $category->id : null;
+
         return [
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:categories,slug,' . $categoryId,
+            'slug' => 'nullable|string|max:255|unique:categories,slug,' . $categoryId,
             'description' => 'nullable|string',
             'parent_id' => 'nullable|exists:categories,id',
-            'is_active' => 'boolean',
+            'is_active' => 'sometimes|boolean',
             'sort_order' => 'nullable|integer|min:0',
         ];
     }
