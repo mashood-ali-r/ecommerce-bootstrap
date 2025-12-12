@@ -21,6 +21,14 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
         ]);
 
+        // Create an admin user
+        User::factory()->create([
+            'name' => 'Administrator',
+            'email' => 'admin@eezepc.com',
+            'password' => bcrypt('admin123'),
+            'is_admin' => true,
+        ]);
+
         // Create a test user
         User::factory()->create([
             'name' => 'Test User',

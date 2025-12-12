@@ -98,7 +98,7 @@ class WishlistController extends Controller
 
         if (isset($wishlist[$productId])) {
             $item = $wishlist[$productId];
-            
+
             // Add to cart
             if (isset($cart[$productId])) {
                 $cart[$productId]['quantity']++;
@@ -132,9 +132,19 @@ class WishlistController extends Controller
     /**
      * Clear entire wishlist
      */
-    public function clear()
+    public function clear(Request $request)
     {
-        session()->forget('wishlist');
+        session(['wishlist' => []]);
+        session()->save();
+
+        // Return JSON for AJAX requests
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Wishlist cleared successfully!',
+                'count' => 0
+            ]);
+        }
 
         return redirect()->route('wishlist.index')
             ->with('success', 'Wishlist cleared successfully!');

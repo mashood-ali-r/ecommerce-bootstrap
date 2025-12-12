@@ -23,10 +23,10 @@ class ProductController extends Controller
         // Search
         if ($request->has('search') && $request->search != '') {
             $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'like', "%{$searchTerm}%")
-                  ->orWhere('description', 'like', "%{$searchTerm}%")
-                  ->orWhere('sku', 'like', "%{$searchTerm}%");
+                    ->orWhere('description', 'like', "%{$searchTerm}%")
+                    ->orWhere('sku', 'like', "%{$searchTerm}%");
             });
         }
 
@@ -41,7 +41,7 @@ class ProductController extends Controller
         // Sorting
         $sortBy = $request->get('sort', 'created_at');
         $sortOrder = $request->get('order', 'desc');
-        
+
         switch ($sortBy) {
             case 'price_low':
                 $query->orderBy('price', 'asc');
@@ -95,19 +95,53 @@ class ProductController extends Controller
     public function search(Request $request)
     {
         $searchTerm = $request->get('q', '');
-        
-        if (strlen($searchTerm) < 2) {
-            return response()->json([]);
+
+        // For AJAX requests, return JSON
+        if ($request->has('ajax') || $request->ajax()) {
+            if (strlen($searchTerm) < 2) {
+                return response()->json([]);
+            }
+
+            $query = Product::with('category')->where('is_active', true)
+                ->where(function ($q) use ($searchTerm) {
+                    $q->where('name', 'like', "%{$searchTerm}%")
+                        ->orWhere('sku', 'like', "%{$searchTerm}%")
+                        ->orWhere('description', 'like', "%{$searchTerm}%");
+                });
+
+            // Filter by category slug if provided
+            if ($request->has('category') && $request->category != '') {
+                $category = Category::where('slug', $request->category)->first();
+                if ($category) {
+                    // Include children categories
+                    $categoryIds = [$category->id];
+                    $childIds = Category::where('parent_id', $category->id)->pluck('id')->toArray();
+                    $categoryIds = array_merge($categoryIds, $childIds);
+                    $query->whereIn('category_id', $categoryIds);
+                }
+            }
+
+            $products = $query->limit(10)->get();
+
+            // Format response with image and category
+            $results = $products->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'slug' => $product->slug,
+                    'price' => $product->price,
+                    'image' => $product->image ? asset('storage/' . $product->image) : null,
+                    'category_name' => $product->category ? $product->category->name : null,
+                ];
+            });
+
+            return response()->json($results);
         }
 
-        $products = Product::where('is_active', true)
-            ->where(function($query) use ($searchTerm) {
-                $query->where('name', 'like', "%{$searchTerm}%")
-                      ->orWhere('sku', 'like', "%{$searchTerm}%");
-            })
-            ->limit(10)
-            ->get(['id', 'name', 'slug', 'price', 'sku']);
-
-        return response()->json($products);
+        // For regular form submission, redirect to products index with search
+        return redirect()->route('products.index', [
+            'search' => $searchTerm,
+            'category' => $request->get('category', '')
+        ]);
     }
 }

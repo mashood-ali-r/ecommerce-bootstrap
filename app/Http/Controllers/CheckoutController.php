@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Product;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
@@ -12,7 +17,7 @@ class CheckoutController extends Controller
     public function index()
     {
         $cart = session()->get('cart', []);
-        
+
         // Redirect to cart if empty
         if (empty($cart)) {
             return redirect()->route('cart.view')
@@ -54,38 +59,66 @@ class CheckoutController extends Controller
                 ->with('error', 'Your cart is empty!');
         }
 
-        // Calculate totals
-        $subtotal = 0;
-        foreach ($cart as $item) {
-            $subtotal += $item['price'] * $item['quantity'];
+        try {
+            DB::beginTransaction();
+
+            // Calculate totals
+            $subtotal = 0;
+            foreach ($cart as $item) {
+                $subtotal += $item['price'] * $item['quantity'];
+            }
+
+            $shipping = 250;
+            $tax = $subtotal * 0.05;
+            $total = $subtotal + $shipping + $tax;
+
+            // Create Order
+            $order = Order::create([
+                'order_number' => 'ORD-' . strtoupper(uniqid()),
+                'user_id' => auth()->id(),
+                'customer_name' => $request->full_name,
+                'customer_email' => $request->email,
+                'customer_phone' => $request->phone,
+                'shipping_address' => $request->address . ', ' . $request->city . ' - ' . $request->postal_code,
+                'city' => $request->city,
+                'postal_code' => $request->postal_code,
+                'payment_method' => $request->payment_method,
+                'status' => 'pending',
+                'subtotal' => $subtotal,
+                'shipping' => $shipping,
+                'tax' => $tax,
+                'total' => $total,
+            ]);
+
+            // Create Order Items
+            foreach ($cart as $id => $item) {
+                $product = Product::find($id);
+
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $id,
+                    'product_name' => $item['name'],
+                    'product_sku' => $product ? $product->sku : 'N/A',
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'],
+                    'subtotal' => $item['price'] * $item['quantity'],
+                ]);
+            }
+
+            DB::commit();
+
+            // Clear cart
+            session()->forget('cart');
+            session(['last_order_id' => $order->id]);
+
+            return redirect()->route('checkout.success')
+                ->with('success', 'Order placed successfully!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Order placement failed: ' . $e->getMessage());
+            return back()->with('error', 'Failed to place order. Please try again. ' . $e->getMessage());
         }
-
-        $shipping = 250;
-        $tax = $subtotal * 0.05;
-        $total = $subtotal + $shipping + $tax;
-
-        // Store order data in session (will be saved to database later)
-        $orderData = [
-            'order_number' => 'ORD-' . strtoupper(uniqid()),
-            'customer_name' => $request->full_name,
-            'customer_email' => $request->email,
-            'customer_phone' => $request->phone,
-            'shipping_address' => $request->address . ', ' . $request->city . ' - ' . $request->postal_code,
-            'payment_method' => $request->payment_method,
-            'subtotal' => $subtotal,
-            'shipping' => $shipping,
-            'tax' => $tax,
-            'total' => $total,
-            'items' => $cart,
-            'status' => 'pending',
-            'created_at' => now()->toDateTimeString()
-        ];
-
-        session(['last_order' => $orderData]);
-        session()->forget('cart'); // Clear cart
-
-        return redirect()->route('checkout.success')
-            ->with('success', 'Order placed successfully!');
     }
 
     /**
@@ -93,12 +126,13 @@ class CheckoutController extends Controller
      */
     public function success()
     {
-        $order = session()->get('last_order');
+        $orderId = session()->get('last_order_id');
 
-        if (!$order) {
-            return redirect()->route('home')
-                ->with('error', 'No order found!');
+        if (!$orderId) {
+            return redirect()->route('home');
         }
+
+        $order = Order::with('items.product')->findOrFail($orderId);
 
         return view('checkout-success', compact('order'));
     }

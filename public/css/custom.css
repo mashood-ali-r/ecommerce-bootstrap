@@ -121,6 +121,7 @@
 /* ============================================
    GLOBAL STYLES
    ============================================ */
+/* 
 body {
     font-family: var(--font-family);
     font-size: var(--font-size-base);
@@ -128,14 +129,10 @@ body {
     background: var(--light-gray-bg);
     line-height: 1.6;
     letter-spacing: -0.022em;
-    /* Tighter, like Apple */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* ============================================
-   TYPOGRAPHY
-   ============================================ */
 h1,
 h2,
 h3,
@@ -190,6 +187,7 @@ a {
 a:hover {
     color: var(--apple-blue-hover);
 }
+*/
 
 /* ============================================
    AMAZON-STYLE DESIGN TOKENS
