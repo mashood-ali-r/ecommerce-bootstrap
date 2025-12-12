@@ -23,6 +23,11 @@ if exist "..\php\php.exe" (
     )
 )
 
+:: Clear Cache (Important for Portability)
+echo [INFO] Clearing application cache...
+"%PHP_BIN%" artisan config:clear
+"%PHP_BIN%" artisan view:clear
+
 :: Check if database exists
 if not exist "database\database.sqlite" (
     echo [WARNING] Database file not found!
