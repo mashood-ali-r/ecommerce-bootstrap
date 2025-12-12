@@ -61,11 +61,12 @@ USB_DRIVE:\
 
 ## 4. How to Run (Plug & Play)
 1.  Plug the USB into any Windows computer.
-2.  Open the `ecommerce-bootstrap` folder.
-3.  Double-click **`start_portable.bat`**.
+2.  **Open the `ecommerce-bootstrap` folder** on the USB drive.
+3.  **Double-click `start_portable.bat`** located *inside* that folder.
+    *   *Do NOT run it from outside the folder or via a shortcut unless the "Start in" directory is set correctly.*
 
 The script will:
-1.  Find the `php` folder automatically.
+1.  Find the `php` folder automatically (it looks in `..\php`).
 2.  Check for the database (and create/seed it if missing).
 3.  Launch the local server (`http://127.0.0.1:8000`).
 4.  Automatically open your web browser.
