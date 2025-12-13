@@ -233,6 +233,14 @@ a:hover {
     text-decoration: underline;
 }
 
+/* Remove underline from buttons styled as anchor tags */
+a.btn,
+a.btn:hover,
+a.btn:focus,
+a.btn:active {
+    text-decoration: none !important;
+}
+
 /* ============================================
    AMAZON HEADER
    ============================================ */

@@ -32,55 +32,53 @@
 
         <!-- Content Grid (Overlaps Hero) -->
         <div class="amz-content-grid">
-            <!-- Card 1: Shop by Category (Quad) -->
-            <div class="amz-card">
-                <h3 class="amz-card-title">Shop by Category</h3>
-                <div class="amz-card-content">
-                    <div class="amz-quad-grid">
-                        @foreach($categories->take(4) as $category)
-                            <a href="{{ route('products.index', ['category' => $category->id]) }}" class="amz-quad-item">
-                                <img src="https://source.unsplash.com/random/300x300/?{{ $category->slug }}"
-                                    class="amz-quad-img" alt="{{ $category->name }}">
-                                <span class="amz-quad-label">{{ $category->name }}</span>
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
-                <a href="{{ route('categories') }}" class="amz-card-link">See all categories</a>
-            </div>
-
-            <!-- Card 2: Deal of the Day (Single) -->
+            <!-- Card 1: Deal of the Day (Carousel Slider) -->
             <div class="amz-card">
                 <h3 class="amz-card-title">Deal of the Day</h3>
                 <div class="amz-card-content">
                     @if($flashDeals->count() > 0)
-                        @php $deal = $flashDeals->first(); @endphp
-                        <a href="{{ route('products.show', $deal->slug) }}" class="d-block h-100">
-                            <img src="{{ $deal->image_url ?? 'https://source.unsplash.com/random/600x600/?gadget' }}"
-                                class="amz-single-img" alt="{{ $deal->name }}">
-                            <div class="mt-2">
-                                <span class="badge bg-danger">Up to 50% off</span>
-                                <span class="fw-bold text-danger">Top Deal</span>
+                        <div id="dealCarousel" class="carousel slide h-100" data-bs-ride="carousel" data-bs-interval="3000">
+                            <div class="carousel-inner h-100">
+                                @foreach($flashDeals as $index => $deal)
+                                    <div class="carousel-item h-100 {{ $index === 0 ? 'active' : '' }}">
+                                        <a href="{{ route('products.show', $deal->slug) }}"
+                                            class="d-flex align-items-center justify-content-center h-100 text-decoration-none">
+                                            <img src="{{ $deal->image_url ?? 'https://via.placeholder.com/400x300?text=No+Image' }}"
+                                                class="img-fluid" style="max-height: 320px; max-width: 100%; object-fit: contain;"
+                                                alt="{{ $deal->name }}">
+                                        </a>
+                                    </div>
+                                @endforeach
                             </div>
-                            <p class="mb-0 text-truncate">{{ $deal->name }}</p>
-                        </a>
+                            @if($flashDeals->count() > 1)
+                                <!-- Carousel Indicators -->
+                                <div class="carousel-indicators" style="bottom: -10px;">
+                                    @foreach($flashDeals as $index => $deal)
+                                        <button type="button" data-bs-target="#dealCarousel" data-bs-slide-to="{{ $index }}"
+                                            class="{{ $index === 0 ? 'active' : '' }}" style="background-color: #232f3e;"></button>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
                     @else
-                        <img src="https://source.unsplash.com/random/600x600/?electronics" class="amz-single-img" alt="Deal">
+                        <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                            <p>No deals available today</p>
+                        </div>
                     @endif
                 </div>
                 <a href="{{ route('deals') }}" class="amz-card-link">See all deals</a>
             </div>
 
-            <!-- Card 3: New Arrivals (Quad) -->
-            <div class="amz-card">
+            <!-- Card 2: New Arrivals (Larger - spans 2 columns) -->
+            <div class="amz-card" style="grid-column: span 2;">
                 <h3 class="amz-card-title">New Arrivals</h3>
                 <div class="amz-card-content">
-                    <div class="amz-quad-grid">
-                        @foreach($newProducts->take(4) as $product)
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; height: 100%;">
+                        @foreach($newProducts->take(6) as $product)
                             <a href="{{ route('products.show', $product->slug) }}" class="amz-quad-item">
                                 <img src="{{ $product->image_url ?? 'https://source.unsplash.com/random/300x300/?tech' }}"
                                     class="amz-quad-img" alt="{{ $product->name }}">
-                                <span class="amz-quad-label text-truncate">{{ Str::limit($product->name, 15) }}</span>
+                                <span class="amz-quad-label text-truncate">{{ Str::limit($product->name, 20) }}</span>
                             </a>
                         @endforeach
                     </div>
@@ -88,7 +86,7 @@
                 <a href="{{ route('products.index') }}" class="amz-card-link">Shop latest products</a>
             </div>
 
-            <!-- Card 4: Sign In (For Guests) or Featured (For Auth) -->
+            <!-- Card 3: Sign In (For Guests) or Featured (For Auth) -->
             <div class="amz-card">
                 @auth
                     <h3 class="amz-card-title">Pick up where you left off</h3>

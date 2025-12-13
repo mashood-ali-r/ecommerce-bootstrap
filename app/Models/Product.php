@@ -92,6 +92,19 @@ class Product extends Model
     }
 
     /**
+     * Get the primary image URL (full URL for use in views).
+     * This allows using $product->image_url in views.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        $imagePath = $this->image;
+        if ($imagePath) {
+            return asset('storage/' . $imagePath);
+        }
+        return null;
+    }
+
+    /**
      * Get the wishlists for the product.
      */
     public function wishlists(): HasMany

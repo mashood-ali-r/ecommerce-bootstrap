@@ -3,7 +3,7 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6">
-                <small><i class="fas fa-phone-alt me-2"></i>(0302) 2044172</small>
+                <small><i class="fas fa-phone-alt me-2"></i>(0302) 0274115</small>
                 <small class="ms-3"><i class="fas fa-envelope me-2"></i>Help: help@eezepc.com</small>
                 <small class="ms-3"><i class="fas fa-envelope me-2"></i>Sales: sales@eezepc.com</small>
             </div>

@@ -14,7 +14,7 @@ class HomeController extends Controller
     public function index()
     {
         // Get featured products
-        $featuredProducts = Product::with('category')
+        $featuredProducts = Product::with(['category', 'primaryImage'])
             ->where('is_active', true)
             ->where('is_featured', true)
             ->inRandomOrder()
@@ -22,21 +22,32 @@ class HomeController extends Controller
             ->get();
 
         // Get new arrivals
-        $newProducts = Product::with('category')
+        $newProducts = Product::with(['category', 'primaryImage'])
             ->where('is_active', true)
             ->where('is_new', true)
             ->orderBy('created_at', 'desc')
             ->limit(8)
             ->get();
 
-        // Get flash deals
-        $flashDeals = Product::with('category')
+        // Get flash deals (flash deals or featured products)
+        $flashDeals = Product::with(['category', 'primaryImage'])
             ->where('is_active', true)
-            ->where('is_flash_deal', true)
-            ->whereNotNull('old_price')
+            ->where(function ($q) {
+                $q->where('is_flash_deal', true)
+                    ->orWhere('is_featured', true);
+            })
             ->orderBy('created_at', 'desc')
             ->limit(6)
             ->get();
+
+        // Fallback to any active products if no deals found
+        if ($flashDeals->isEmpty()) {
+            $flashDeals = Product::with(['category', 'primaryImage'])
+                ->where('is_active', true)
+                ->inRandomOrder()
+                ->limit(6)
+                ->get();
+        }
 
         // Get active categories with product count
         $categories = Category::where('is_active', true)
